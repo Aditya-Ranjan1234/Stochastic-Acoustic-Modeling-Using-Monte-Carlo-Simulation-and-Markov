@@ -12,6 +12,12 @@ instance/
 .webassets-cache
 static/results/*.png
 
+# Research Repos (Not needed for the web app)
+AcoustiX/
+GeoAc/
+MCRay-Tracing/
+cram/
+
 # OS
 .DS_Store
 Thumbs.db

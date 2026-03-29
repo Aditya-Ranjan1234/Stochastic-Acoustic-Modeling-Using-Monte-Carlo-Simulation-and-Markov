@@ -1,18 +1,21 @@
-from flask import Flask, jsonify, send_from_directory, request
+from flask import Flask, jsonify, request
 import os
 import sys
 import numpy as np
 import json
 
-# Ensure project modules are importable
-project_root = os.path.dirname(os.path.abspath(__file__))
+# Ensure project modules are importable (for Vercel api/ subfolder)
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 
 from engine.core import MonteCarloSimulation, create_irregular_room
 from visualization.plots import visualize_ray_paths, plot_impulse_response, generate_heatmap
 from scipy.stats import beta
+import matplotlib
+matplotlib.use('Agg')
 
-app = Flask(__name__, static_url_path='', static_folder='static')
+# Initialize Flask app
+app = Flask(__name__)
 
 # --- Helper Functions for New Tabs ---
 
@@ -178,10 +181,6 @@ def grid_sim():
 
 # Create the global mesh for the demo
 scene_mesh = create_irregular_room()
-
-@app.route('/')
-def index():
-    return send_from_directory('static', 'index.html')
 
 @app.route('/api/simulate', methods=['POST'])
 def run_simulation():
