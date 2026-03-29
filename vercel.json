@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.py" },
-    { "source": "/(.*)", "destination": "/api/index.py" }
-  ],
   "functions": {
-    "api/index.py": {
+    "api/*.py": {
       "memory": 1024,
       "maxDuration": 60
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/(.*)", "destination": "/api/index" }
+  ]
 }

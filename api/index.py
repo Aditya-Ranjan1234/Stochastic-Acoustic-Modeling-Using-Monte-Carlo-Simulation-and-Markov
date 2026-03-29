@@ -20,17 +20,18 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+# Vercel path handling
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 @app.route('/')
 def index():
-    # Attempt to serve index.html from the root if routed here
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    return send_from_directory(root_dir, 'index.html')
+    return send_from_directory(BASE_DIR, 'index.html')
 
 @app.route('/<path:path>')
 def catch_all(path):
-    # Serve other static files if routed here
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    return send_from_directory(root_dir, path)
+    if os.path.exists(os.path.join(BASE_DIR, path)):
+        return send_from_directory(BASE_DIR, path)
+    return send_from_directory(BASE_DIR, 'index.html')
 
 # --- Helper Functions for New Tabs ---
 
@@ -244,6 +245,3 @@ def run_simulation():
         })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5001)

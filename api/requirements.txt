@@ -1,0 +1,7 @@
+Flask
+Flask-CORS
+numpy
+trimesh
+scipy
+matplotlib
+gunicorn
