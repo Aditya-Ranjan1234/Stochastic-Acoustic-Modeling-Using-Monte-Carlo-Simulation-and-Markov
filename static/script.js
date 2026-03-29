@@ -48,11 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.status === 'success') {
                 statusText.innerText = "Calculating Markov transitions...";
                 
-                // Update images with cache busting
-                const timestamp = new Date().getTime();
-                rayPlot.src = `${data.plots.ray_paths}?t=${timestamp}`;
-                heatmapPlot.src = `${data.plots.heatmap}?t=${timestamp}`;
-                irPlot.src = `${data.plots.impulse_response}?t=${timestamp}`;
+                // Update images with base64 data
+                rayPlot.src = data.plots.ray_paths;
+                heatmapPlot.src = data.plots.heatmap;
+                irPlot.src = data.plots.impulse_response;
                 
                 // Update stats
                 statEnergy.innerText = data.stats.avg_energy;

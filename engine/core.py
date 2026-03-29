@@ -117,6 +117,7 @@ class MonteCarloSimulation:
 def create_irregular_room():
     """
     Creates an L-shaped room (irregular geometry) for acoustic modeling.
+    Uses concatenation instead of boolean union to avoid external dependencies like manifold3d.
     """
     # Create two boxes and combine them to make an L-shape
     box1 = trimesh.creation.box(extents=[10, 10, 4])
@@ -125,5 +126,6 @@ def create_irregular_room():
     box2 = trimesh.creation.box(extents=[6, 15, 4])
     box2.apply_translation([13, 2.5, 2])
     
-    room = trimesh.boolean.union([box1, box2])
+    # Concatenate meshes for ray tracing (cheaper than boolean union)
+    room = trimesh.util.concatenate([box1, box2])
     return room

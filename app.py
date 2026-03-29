@@ -179,11 +179,6 @@ def grid_sim():
 # Create the global mesh for the demo
 scene_mesh = create_irregular_room()
 
-# Path for simulation results
-RESULTS_DIR = os.path.join(project_root, "static", "results")
-if not os.path.exists(RESULTS_DIR):
-    os.makedirs(RESULTS_DIR)
-
 @app.route('/')
 def index():
     return send_from_directory('static', 'index.html')
@@ -210,15 +205,10 @@ def run_simulation():
         # 3. Execute Simulation (Monte Carlo + Markov)
         paths, impulse_response = sim.run(source_pos)
         
-        # 4. Generate and Save Plots to static/results
-        ray_plot_path = os.path.join(RESULTS_DIR, "ray_paths_3d.png")
-        visualize_ray_paths(paths, save_path=ray_plot_path)
-        
-        ir_plot_path = os.path.join(RESULTS_DIR, "impulse_response.png")
-        plot_impulse_response(impulse_response, save_path=ir_plot_path)
-        
-        heatmap_path = os.path.join(RESULTS_DIR, "energy_heatmap.png")
-        generate_heatmap(paths, save_path=heatmap_path)
+        # 4. Generate Plots as Base64 strings
+        ray_plot_b64 = visualize_ray_paths(paths)
+        ir_plot_b64 = plot_impulse_response(impulse_response)
+        heatmap_b64 = generate_heatmap(paths)
         
         # 5. Calculate Stats
         total_data_points = len(impulse_response)
@@ -233,9 +223,9 @@ def run_simulation():
                 "avg_energy": round(float(avg_energy), 4)
             },
             "plots": {
-                "ray_paths": "/results/ray_paths_3d.png",
-                "impulse_response": "/results/impulse_response.png",
-                "heatmap": "/results/energy_heatmap.png"
+                "ray_paths": f"data:image/png;base64,{ray_plot_b64}",
+                "impulse_response": f"data:image/png;base64,{ir_plot_b64}",
+                "heatmap": f"data:image/png;base64,{heatmap_b64}"
             }
         })
     except Exception as e:

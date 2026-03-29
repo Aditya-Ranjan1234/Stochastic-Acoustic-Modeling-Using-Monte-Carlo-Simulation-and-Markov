@@ -1,6 +1,18 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import io
+import base64
+
+def get_plot_as_base64():
+    """
+    Helper to convert current matplotlib figure to base64 string.
+    """
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight')
+    plt.close()
+    buf.seek(0)
+    return base64.b64encode(buf.getvalue()).decode('utf-8')
 
 def visualize_ray_paths(paths, save_path=None):
     """
@@ -21,16 +33,16 @@ def visualize_ray_paths(paths, save_path=None):
     if save_path:
         plt.savefig(save_path)
         plt.close()
+        return None
     else:
-        plt.show()
+        return get_plot_as_base64()
 
 def plot_impulse_response(imp_res, save_path=None):
     """
     Plots the energy vs arrival time (impulse response).
     """
     if not imp_res:
-        print("No impulse response data available.")
-        return
+        return ""
         
     times, energies = zip(*imp_res)
     
@@ -44,8 +56,9 @@ def plot_impulse_response(imp_res, save_path=None):
     if save_path:
         plt.savefig(save_path)
         plt.close()
+        return None
     else:
-        plt.show()
+        return get_plot_as_base64()
 
 def generate_heatmap(paths, save_path=None):
     """
@@ -66,5 +79,6 @@ def generate_heatmap(paths, save_path=None):
     if save_path:
         plt.savefig(save_path)
         plt.close()
+        return None
     else:
-        plt.show()
+        return get_plot_as_base64()
