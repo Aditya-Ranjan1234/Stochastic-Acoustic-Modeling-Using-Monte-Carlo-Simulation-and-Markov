@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acoustic Markov Lab | Stochastic Modeling</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="glow-bg"></div>
+    
+    <nav class="navbar glass-panel">
+        <div class="logo">ACOUSTIC<span>MARKOV</span></div>
+        <div class="nav-links">
+            <a href="#" class="active" onclick="showTab('simulation')">3D Simulation</a>
+            <a href="#" onclick="showTab('canyon')">Street Canyon</a>
+            <a href="#" onclick="showTab('convergence')">Convergence</a>
+            <a href="#" onclick="showTab('grid')">Urban Grid</a>
+            <a href="#" onclick="showTab('inferences')">Research Inferences</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- SIMULATION TAB -->
+        <div id="simulation-tab" class="tab-content">
+            <div class="dashboard-grid">
+                <aside class="sidebar glass-panel">
+                    <div class="section-title">
+                        <span class="icon">⚙️</span>
+                        <h2>Engine Config</h2>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Monte Carlo Ray Count</label>
+                        <div class="range-container">
+                            <input type="range" id="num-rays" min="500" max="5000" step="500" value="1000">
+                            <span class="range-val" id="val-rays">1000</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Markov Bounce Depth</label>
+                        <div class="range-container">
+                            <input type="range" id="max-bounces" min="5" max="25" step="1" value="12">
+                            <span class="range-val" id="val-bounces">12</span>
+                        </div>
+                    </div>
+
+                    <button id="simulate-btn" class="primary-btn">
+                        <span class="btn-glow"></span>
+                        <span class="text">Execute Simulation</span>
+                    </button>
+
+                    <div id="status-box" class="status-box hidden">
+                        <div class="loader"></div>
+                        <p id="status-text">Tracing rays...</p>
+                    </div>
+
+                    <div id="stats-panel" class="stats-panel hidden">
+                        <div class="divider"></div>
+                        <h3>Simulation Metrics</h3>
+                        <div class="stat-card">
+                            <label>Avg Ray Energy</label>
+                            <div class="value" id="stat-energy">0.0000</div>
+                        </div>
+                        <div class="stat-card">
+                            <label>Hit Events</label>
+                            <div class="value" id="stat-points">0</div>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="results-area">
+                    <div class="plots-grid">
+                        <div class="plot-box glass-panel">
+                            <div class="plot-header">
+                                <h3>3D Ray Trajectories</h3>
+                                <span class="badge">Spatial</span>
+                            </div>
+                            <div class="img-wrapper">
+                                <img id="ray-plot" src="" alt="Execute simulation to generate spatial data">
+                            </div>
+                        </div>
+                        
+                        <div class="plot-box glass-panel">
+                            <div class="plot-header">
+                                <h3>Energy Intensity Map</h3>
+                                <span class="badge">Heatmap</span>
+                            </div>
+                            <div class="img-wrapper">
+                                <img id="heatmap-plot" src="" alt="Heatmap data will appear here">
+                            </div>
+                        </div>
+
+                        <div class="plot-box glass-panel full-width">
+                            <div class="plot-header">
+                                <h3>Impulse Response (Markov Transitions)</h3>
+                                <span class="badge">Acoustic Signature</span>
+                            </div>
+                            <div class="img-wrapper large">
+                                <img id="ir-plot" src="" alt="Temporal decay profile">
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- STREET CANYON TAB -->
+        <div id="canyon-tab" class="tab-content hidden">
+            <div class="dashboard-grid">
+                <aside class="sidebar glass-panel">
+                    <div class="section-title">
+                        <span class="icon">🏘️</span>
+                        <h2>Canyon Parameters</h2>
+                    </div>
+                    <div class="control-group">
+                        <label>H/W Ratio (Aspect)</label>
+                        <input type="range" id="canyon-hw" min="0.5" max="3.0" step="0.1" value="1.0">
+                        <span class="range-val" id="val-hw">1.0</span>
+                    </div>
+                    <div class="control-group">
+                        <label>Facade Absorption (α_f)</label>
+                        <input type="range" id="canyon-af" min="0.1" max="0.9" step="0.05" value="0.3">
+                        <span class="range-val" id="val-af">0.3</span>
+                    </div>
+                    <div class="control-group">
+                        <label>Ground Absorption (α_g)</label>
+                        <input type="range" id="canyon-ag" min="0.1" max="0.9" step="0.05" value="0.2">
+                        <span class="range-val" id="val-ag">0.2</span>
+                    </div>
+                    <div class="control-group">
+                        <label>Atm. Attenuation (μ)</label>
+                        <input type="range" id="canyon-mu" min="0.001" max="0.05" step="0.001" value="0.01">
+                        <span class="range-val" id="val-mu">0.01</span>
+                    </div>
+                    <div class="control-group">
+                        <label>Source Power (Lw dB)</label>
+                        <input type="range" id="canyon-lw" min="80" max="110" step="1" value="90">
+                        <span class="range-val" id="val-lw">90</span>
+                    </div>
+                </aside>
+
+                <main class="results-area">
+                    <div class="spl-readout glass-panel">
+                        <label>Receiver SPL</label>
+                        <span id="canyon-spl">0.0</span> <small>dB</small>
+                    </div>
+                    <div class="plots-grid">
+                        <div class="plot-box glass-panel">
+                            <h3>Transition Matrix (5x5 Heatmap)</h3>
+                            <div id="matrix-heatmap" class="matrix-grid"></div>
+                        </div>
+                        <div class="plot-box glass-panel">
+                            <h3>Stationary Distribution (π)</h3>
+                            <canvas id="dist-chart"></canvas>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- CONVERGENCE TAB -->
+        <div id="convergence-tab" class="tab-content hidden">
+            <div class="full-dashboard glass-panel">
+                <div class="plot-header">
+                    <h2>Monte Carlo Convergence (Law of Large Numbers)</h2>
+                    <button id="run-convergence" class="primary-btn small">Animate Convergence</button>
+                </div>
+                <div class="convergence-layout">
+                    <div class="main-plot-container">
+                        <canvas id="convergence-chart"></canvas>
+                    </div>
+                    <div class="sub-plot-container">
+                        <h3>Uncertainty Decay (1/√N)</h3>
+                        <canvas id="ci-decay-chart"></canvas>
+                        <div class="convergence-stats">
+                            <div class="c-stat">Samples: <span id="conv-n">0</span></div>
+                            <div class="c-stat">CI Width: <span id="conv-ci">0.0</span> dB</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- URBAN GRID TAB -->
+        <div id="grid-tab" class="tab-content hidden">
+            <div class="dashboard-grid">
+                <aside class="sidebar glass-panel">
+                    <div class="section-title">
+                        <span class="icon">🌆</span>
+                        <h2>Grid Configuration</h2>
+                    </div>
+                    <div class="profile-selector">
+                        <button class="profile-btn active" data-profile="Mixed">Mixed (Realistic)</button>
+                        <button class="profile-btn" data-profile="Dense Urban">Dense Urban</button>
+                        <button class="profile-btn" data-profile="Suburban">Suburban</button>
+                    </div>
+                    <button id="refresh-grid" class="primary-btn">Resample 4x4 Grid</button>
+                </aside>
+                <main class="results-area">
+                    <div class="plots-grid">
+                        <div class="plot-box glass-panel">
+                            <h3>Mean SPL Heatmap (dB)</h3>
+                            <div id="grid-spl-map" class="urban-grid"></div>
+                        </div>
+                        <div class="plot-box glass-panel">
+                            <h3>Uncertainty (95% CI Width)</h3>
+                            <div id="grid-ci-map" class="urban-grid"></div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- INFERENCES TAB -->
+        <div id="inferences-tab" class="tab-content hidden">
+            <div class="inferences-grid">
+                <div class="info-card glass-panel">
+                    <div class="info-header">
+                        <span class="num">01</span>
+                        <h3>Monte Carlo Ray Sampling</h3>
+                    </div>
+                    <p>Traditional acoustic modeling often uses limited ray paths. Our system employs <strong>Monte Carlo sampling</strong> to generate thousands of unique trajectories, ensuring that every corner of an irregular geometry is explored.</p>
+                    <div class="tag">Spatial Completeness</div>
+                </div>
+
+                <div class="info-card glass-panel">
+                    <div class="info-header">
+                        <span class="num">02</span>
+                        <h3>Markovian State Transitions</h3>
+                        <span class="novelty-tag">CORE NOVELTY</span>
+                    </div>
+                    <p>Unlike deterministic models where a ray simply reflects, our <strong>Markov engine</strong> treats each interaction as a probabilistic state. A ray might reflect, scatter, or be absorbed based on a transition matrix defined by the surface material.</p>
+                    <div class="matrix-demo">
+                        <div class="m-row"><span>Reflect</span> <span>85%</span></div>
+                        <div class="m-row"><span>Scatter</span> <span>10%</span></div>
+                        <div class="m-row"><span>Absorb</span> <span>5%</span></div>
+                    </div>
+                </div>
+
+                <div class="info-card glass-panel">
+                    <div class="info-header">
+                        <span class="num">03</span>
+                        <h3>Irregular Geometries</h3>
+                    </div>
+                    <p>Simple box rooms are rare in reality. By using <strong>Trimesh-based collision detection</strong>, we simulate sound propagation in complex, non-convex spaces (like L-shaped halls or curved auditoriums) where sound shadowing and secondary reflections are critical.</p>
+                    <div class="tag">Geometric Realism</div>
+                </div>
+
+                <div class="info-card glass-panel highlight">
+                    <h3>Research Summary</h3>
+                    <p>The combination of stochastic sampling and probabilistic transitions provides a more realistic approximation of diffuse sound fields than standard ray-tracing. This approach is particularly effective for predicting reverberation in spaces with highly varied materials.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

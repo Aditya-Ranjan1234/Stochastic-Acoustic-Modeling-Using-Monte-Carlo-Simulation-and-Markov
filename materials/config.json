@@ -1,0 +1,27 @@
+{
+    "concrete": {
+        "reflection": 0.85,
+        "absorption": 0.1,
+        "scattering": 0.05
+    },
+    "brick": {
+        "reflection": 0.75,
+        "absorption": 0.15,
+        "scattering": 0.1
+    },
+    "wood": {
+        "reflection": 0.6,
+        "absorption": 0.3,
+        "scattering": 0.1
+    },
+    "curtain": {
+        "reflection": 0.1,
+        "absorption": 0.8,
+        "scattering": 0.1
+    },
+    "glass": {
+        "reflection": 0.9,
+        "absorption": 0.05,
+        "scattering": 0.05
+    }
+}

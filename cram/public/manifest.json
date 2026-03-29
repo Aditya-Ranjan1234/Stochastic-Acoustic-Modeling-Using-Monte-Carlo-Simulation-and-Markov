@@ -1,0 +1,22 @@
+{
+  "homepage_url": "/",
+  "short_name": "cram",
+  "name": "cram",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "256x256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

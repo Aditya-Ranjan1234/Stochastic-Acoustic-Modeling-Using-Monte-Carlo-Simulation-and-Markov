@@ -1,0 +1,7 @@
+Stochastic Acoustic Modeling Simulation Stats
+============================================
+Monte Carlo Ray Count: 1500
+Markov Bounce Depth: 12
+Total Data Points: 3890
+Average Final Ray Energy: 0.8006
+Simulation Timestamp: 1774703396.7580166

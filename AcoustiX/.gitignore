@@ -1,0 +1,4 @@
+scene/
+__pycache__/
+mi_scece/
+generate_bounding_box.ipynb

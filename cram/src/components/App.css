@@ -1,0 +1,21 @@
+
+.response_overlay{
+  position: absolute; 
+  width: 100%; 
+  height: 100%
+}
+
+.response_overlay-hidden{
+  display: none;
+}
+
+.clf_viewer_overlay{
+  position: absolute;
+  width: 100%;
+  height: 100%
+}
+
+.clv_viewwer_overlay-hidden{
+  display: none; 
+}
+

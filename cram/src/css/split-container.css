@@ -1,0 +1,72 @@
+
+.splitter-layout {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #F5F8FA;
+}
+
+.splitter-layout .layout-pane {
+  position: relative;
+  flex: 0 0 auto;
+  overflow: hidden;
+  background: #F5F8FA;
+}
+
+.splitter-layout .layout-pane.layout-pane-primary {
+  flex: 1 1 auto;
+}
+
+.splitter-layout{
+  --layout-splitter-thickness: 4px;
+  --layout-splitter-color-normal: #bbbbbb33;
+  --layout-splitter-color-active: #bbbbbbbb; 
+}
+
+.splitter-layout > .layout-splitter {
+    width: var(--layout-splitter-thickness);
+    height: 100%;
+    overflow: hidden;
+    cursor: col-resize;
+    background-color: var(--layout-splitter-color-normal);
+}
+.splitter-layout-vertical > .layout-splitter {
+  width: 100%;
+  height: 0px;
+  cursor: row-resize;
+  overflow: hidden;
+  background-color: var(--layout-splitter-color-normal);
+  border: solid calc(var(--layout-splitter-thickness) / 2) var(--layout-splitter-color-normal);
+  box-sizing: content-box;
+}
+.splitter-layout .layout-splitter:hover,
+.splitter-layout .layout-splitter:active,
+.splitter-layout.splitter-layout-vertical > .layout-splitter:hover,
+.splitter-layout.splitter-layout-vertical > .layout-splitter:active {
+  background-color: var(--layout-splitter-color-active);
+}
+
+.splitter-layout.layout-changing {
+  cursor: col-resize;
+}
+
+.splitter-layout.layout-changing > .layout-splitter {
+  background-color: #aaa;
+}
+
+.splitter-layout.splitter-layout-vertical {
+  flex-direction: column;
+}
+
+.splitter-layout.splitter-layout-vertical.layout-changing {
+  cursor: row-resize;
+}
+
+
+
+.overflow-hidden {
+  overflow: hidden;
+}
