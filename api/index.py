@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 import os
 import sys
 import numpy as np
@@ -14,8 +14,23 @@ from scipy.stats import beta
 import matplotlib
 matplotlib.use('Agg')
 
+from flask_cors import CORS
+
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
+
+@app.route('/')
+def index():
+    # Attempt to serve index.html from the root if routed here
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return send_from_directory(root_dir, 'index.html')
+
+@app.route('/<path:path>')
+def catch_all(path):
+    # Serve other static files if routed here
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return send_from_directory(root_dir, path)
 
 # --- Helper Functions for New Tabs ---
 
