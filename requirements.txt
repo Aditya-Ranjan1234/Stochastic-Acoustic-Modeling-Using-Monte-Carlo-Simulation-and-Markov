@@ -1,6 +1,9 @@
+Flask
 numpy
-matplotlib
+trimesh
 scipy
-json
-os
-sys
+matplotlib
+networkx
+manifold3d
+scipy
+gunicorn
