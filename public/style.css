@@ -492,3 +492,100 @@ input[type="range"] {
     text-align: center;
     margin-top: 5px;
 }
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 25px;
+        margin: 10px 15px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links {
+        display: flex;
+        overflow-x: auto;
+        width: 100%;
+        padding-bottom: 5px;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-links a {
+        margin-left: 0;
+        margin-right: 20px;
+        white-space: nowrap;
+        font-size: 0.85rem;
+    }
+
+    .container {
+        padding: 0 15px 20px;
+    }
+
+    .plots-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+
+    .spl-readout {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .spl-readout span {
+        font-size: 2.5rem;
+    }
+
+    .convergence-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .main-plot-container {
+        height: 300px;
+    }
+
+    .inferences-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-card {
+        padding: 25px;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .urban-grid, .matrix-grid {
+        gap: 4px;
+    }
+
+    .grid-cell .val {
+        font-size: 0.9rem;
+    }
+
+    .matrix-cell {
+        font-size: 0.6rem;
+    }
+
+    .formula {
+        font-size: 1rem;
+    }
+}
