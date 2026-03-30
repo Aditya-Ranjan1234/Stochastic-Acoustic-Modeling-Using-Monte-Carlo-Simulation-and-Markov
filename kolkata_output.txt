@@ -1,0 +1,20 @@
+﻿Kolkata: zoom=17, m/px=1.1031, cell=66.2m, total=662m
+Fetching...
+Got 302 building ways
+Occupied cells: 69/100
+Hospital cells: {(0, 7), (3, 4), (7, 8)}
+
+Grid:
+  row 0:   .  .  .  .  .  .  1  .  1  1
+  row 1:   .  .  .  .  .  .  .  .  1  .
+  row 2:   .  .  .  .  .  2  1  .  1  1
+  row 3:   2  .  .  1  1  .  .  3  1  2
+  row 4:   .  1  1  H  2  3  2  1  6  4
+  row 5:   .  2  3  .  1  .  1  2  5 13
+  row 6:   7  1  3  2  2  .  1  3  8  9
+  row 7:   H  5  5  8  6  8  2  5  5  3
+  row 8:   7 10  6  4  6  7  3  H  4  3
+  row 9:   5 12 11 15  9 12  9  6  2  3
+
+JS array (69 entries):
+[{"x": 0, "y": 3, "h": 10, "material": "concrete"}, {"x": 0, "y": 6, "h": 15, "material": "concrete"}, {"x": 0, "y": 7, "h": 20, "material": "hospital"}, {"x": 0, "y": 8, "h": 15, "material": "concrete"}, {"x": 0, "y": 9, "h": 15, "material": "concrete"}, {"x": 1, "y": 4, "h": 5, "material": "concrete"}, {"x": 1, "y": 5, "h": 10, "material": "concrete"}, {"x": 1, "y": 6, "h": 5, "material": "concrete"}, {"x": 1, "y": 7, "h": 15, "material": "concrete"}, {"x": 1, "y": 8, "h": 15, "material": "concrete"}, {"x": 1, "y": 9, "h": 15, "material": "concrete"}, {"x": 2, "y": 4, "h": 5, "material": "concrete"}, {"x": 2, "y": 5, "h": 10, "material": "concrete"}, {"x": 2, "y": 6, "h": 10, "material": "concrete"}, {"x": 2, "y": 7, "h": 15, "material": "concrete"}, {"x": 2, "y": 8, "h": 15, "material": "concrete"}, {"x": 2, "y": 9, "h": 15, "material": "concrete"}, {"x": 3, "y": 3, "h": 5, "material": "concrete"}, {"x": 3, "y": 4, "h": 20, "material": "hospital"}, {"x": 3, "y": 6, "h": 10, "material": "concrete"}, {"x": 3, "y": 7, "h": 15, "material": "concrete"}, {"x": 3, "y": 8, "h": 15, "material": "concrete"}, {"x": 3, "y": 9, "h": 15, "material": "concrete"}, {"x": 4, "y": 3, "h": 5, "material": "concrete"}, {"x": 4, "y": 4, "h": 10, "material": "concrete"}, {"x": 4, "y": 5, "h": 5, "material": "concrete"}, {"x": 4, "y": 6, "h": 10, "material": "concrete"}, {"x": 4, "y": 7, "h": 15, "material": "concrete"}, {"x": 4, "y": 8, "h": 15, "material": "concrete"}, {"x": 4, "y": 9, "h": 15, "material": "concrete"}, {"x": 5, "y": 2, "h": 10, "material": "concrete"}, {"x": 5, "y": 4, "h": 10, "material": "concrete"}, {"x": 5, "y": 7, "h": 15, "material": "concrete"}, {"x": 5, "y": 8, "h": 15, "material": "concrete"}, {"x": 5, "y": 9, "h": 15, "material": "concrete"}, {"x": 6, "y": 0, "h": 5, "material": "concrete"}, {"x": 6, "y": 2, "h": 5, "material": "concrete"}, {"x": 6, "y": 4, "h": 10, "material": "concrete"}, {"x": 6, "y": 5, "h": 5, "material": "concrete"}, {"x": 6, "y": 6, "h": 5, "material": "concrete"}, {"x": 6, "y": 7, "h": 10, "material": "concrete"}, {"x": 6, "y": 8, "h": 10, "material": "concrete"}, {"x": 6, "y": 9, "h": 15, "material": "concrete"}, {"x": 7, "y": 3, "h": 10, "material": "concrete"}, {"x": 7, "y": 4, "h": 5, "material": "concrete"}, {"x": 7, "y": 5, "h": 10, "material": "concrete"}, {"x": 7, "y": 6, "h": 10, "material": "concrete"}, {"x": 7, "y": 7, "h": 15, "material": "concrete"}, {"x": 7, "y": 8, "h": 20, "material": "hospital"}, {"x": 7, "y": 9, "h": 15, "material": "concrete"}, {"x": 8, "y": 0, "h": 5, "material": "concrete"}, {"x": 8, "y": 1, "h": 5, "material": "concrete"}, {"x": 8, "y": 2, "h": 5, "material": "concrete"}, {"x": 8, "y": 3, "h": 5, "material": "concrete"}, {"x": 8, "y": 4, "h": 15, "material": "concrete"}, {"x": 8, "y": 5, "h": 15, "material": "concrete"}, {"x": 8, "y": 6, "h": 15, "material": "concrete"}, {"x": 8, "y": 7, "h": 15, "material": "concrete"}, {"x": 8, "y": 8, "h": 15, "material": "concrete"}, {"x": 8, "y": 9, "h": 10, "material": "concrete"}, {"x": 9, "y": 0, "h": 5, "material": "concrete"}, {"x": 9, "y": 2, "h": 5, "material": "concrete"}, {"x": 9, "y": 3, "h": 10, "material": "concrete"}, {"x": 9, "y": 4, "h": 15, "material": "concrete"}, {"x": 9, "y": 5, "h": 15, "material": "concrete"}, {"x": 9, "y": 6, "h": 15, "material": "concrete"}, {"x": 9, "y": 7, "h": 10, "material": "concrete"}, {"x": 9, "y": 8, "h": 10, "material": "concrete"}, {"x": 9, "y": 9, "h": 10, "material": "concrete"}]

@@ -323,13 +323,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const setMapView = (city) => {
         if (!leafletMap) initMap();
+        const mapDiv = document.getElementById('map');
+        mapDiv.style.transform = 'none';
         if (city === 'barcelona') {
+            // Center: 41.3887, 2.1635 at zoom 17
+            // At zoom 17: 0.896 m/px, each 60px cell = 53.8m, total grid = 538m x 538m
             leafletMap.setView([41.3887, 2.1635], 17);
         } else if (city === 'kolkata') {
+            // Center: 22.5395, 88.3435 at zoom 17
+            // At zoom 17: 1.103 m/px, each 60px cell = 66.2m, total grid = 662m x 662m
             leafletMap.setView([22.5395, 88.3435], 17);
         }
     };
+
     // Map Presets Data
+    // Barcelona & Kolkata buildings fetched from OSM Overpass API,
+    // mapped to the exact 10x10 grid using the same center/zoom as Leaflet.
+    // This ensures each red overlay block sits exactly on top of the real buildings.
     const PRESETS = {
         'empty': { buildings: [], sources: [] },
         'main-street': {
@@ -359,12 +369,58 @@ document.addEventListener('DOMContentLoaded', () => {
             sources: [{x: 2, y: 2, intensity: 2000}, {x: 7, y: 7, intensity: 2000}, {x: 5, y: 1, intensity: 1500}]
         },
         'barcelona': {
-            buildings: [{"x": 3, "y": 9, "h": 15, "material": "concrete"}, {"x": 6, "y": 7, "h": 5, "material": "concrete"}, {"x": 8, "y": 9, "h": 5, "material": "concrete"}, {"x": 8, "y": 8, "h": 5, "material": "concrete"}, {"x": 7, "y": 9, "h": 15, "material": "concrete"}, {"x": 6, "y": 9, "h": 15, "material": "concrete"}, {"x": 5, "y": 9, "h": 5, "material": "concrete"}, {"x": 1, "y": 9, "h": 15, "material": "concrete"}, {"x": 1, "y": 8, "h": 15, "material": "concrete"}, {"x": 0, "y": 9, "h": 5, "material": "concrete"}, {"x": 0, "y": 8, "h": 15, "material": "concrete"}, {"x": 1, "y": 5, "h": 5, "material": "concrete"}, {"x": 2, "y": 5, "h": 5, "material": "concrete"}, {"x": 0, "y": 5, "h": 5, "material": "concrete"}, {"x": 2, "y": 7, "h": 15, "material": "concrete"}, {"x": 2, "y": 4, "h": 5, "material": "concrete"}, {"x": 2, "y": 6, "h": 15, "material": "concrete"}, {"x": 0, "y": 3, "h": 5, "material": "concrete"}, {"x": 0, "y": 2, "h": 5, "material": "concrete"}, {"x": 2, "y": 8, "h": 15, "material": "concrete"}, {"x": 0, "y": 0, "h": 5, "material": "concrete"}, {"x": 1, "y": 2, "h": 5, "material": "concrete"}, {"x": 3, "y": 8, "h": 15, "material": "concrete"}, {"x": 2, "y": 1, "h": 5, "material": "concrete"}, {"x": 3, "y": 7, "h": 15, "material": "concrete"}, {"x": 1, "y": 3, "h": 5, "material": "concrete"}, {"x": 8, "y": 5, "h": 5, "material": "concrete"}, {"x": 2, "y": 3, "h": 15, "material": "concrete"}, {"x": 6, "y": 5, "h": 15, "material": "concrete"}, {"x": 2, "y": 0, "h": 5, "material": "concrete"}, {"x": 5, "y": 4, "h": 5, "material": "concrete"}, {"x": 3, "y": 2, "h": 15, "material": "concrete"}, {"x": 0, "y": 1, "h": 15, "material": "concrete"}, {"x": 6, "y": 4, "h": 5, "material": "concrete"}, {"x": 3, "y": 0, "h": 15, "material": "concrete"}, {"x": 7, "y": 5, "h": 5, "material": "concrete"}, {"x": 7, "y": 6, "h": 5, "material": "concrete"}, {"x": 1, "y": 0, "h": 5, "material": "concrete"}, {"x": 8, "y": 4, "h": 15, "material": "concrete"}, {"x": 4, "y": 1, "h": 5, "material": "concrete"}, {"x": 4, "y": 0, "h": 15, "material": "concrete"}, {"x": 7, "y": 4, "h": 5, "material": "concrete"}, {"x": 7, "y": 3, "h": 15, "material": "concrete"}, {"x": 1, "y": 7, "h": 5, "material": "concrete"}, {"x": 0, "y": 7, "h": 5, "material": "concrete"}, {"x": 0, "y": 6, "h": 5, "material": "concrete"}, {"x": 1, "y": 6, "h": 5, "material": "concrete"}, {"x": 6, "y": 6, "h": 15, "material": "concrete"}, {"x": 5, "y": 3, "h": 5, "material": "concrete"}, {"x": 6, "y": 3, "h": 5, "material": "concrete"}, {"x": 6, "y": 2, "h": 5, "material": "concrete"}, {"x": 3, "y": 4, "h": 5, "material": "concrete"}, {"x": 4, "y": 3, "h": 15, "material": "concrete"}, {"x": 5, "y": 5, "h": 15, "material": "concrete"}, {"x": 4, "y": 2, "h": 5, "material": "concrete"}, {"x": 5, "y": 2, "h": 5, "material": "concrete"}, {"x": 5, "y": 1, "h": 15, "material": "concrete"}, {"x": 6, "y": 1, "h": 15, "material": "concrete"}, {"x": 4, "y": 4, "h": 5, "material": "concrete"}, {"x": 3, "y": 3, "h": 15, "material": "concrete"}, {"x": 5, "y": 0, "h": 15, "material": "concrete"}, {"x": 8, "y": 6, "h": 5, "material": "concrete"}, {"x": 9, "y": 5, "h": 5, "material": "concrete"}, {"x": 1, "y": 1, "h": 15, "material": "concrete"}, {"x": 9, "y": 7, "h": 5, "material": "concrete"}, {"x": 9, "y": 8, "h": 5, "material": "concrete"}, {"x": 9, "y": 3, "h": 15, "material": "concrete"}, {"x": 9, "y": 2, "h": 15, "material": "concrete"}, {"x": 7, "y": 0, "h": 15, "material": "concrete"}, {"x": 6, "y": 0, "h": 15, "material": "concrete"}, {"x": 9, "y": 1, "h": 15, "material": "concrete"}, {"x": 8, "y": 0, "h": 15, "material": "concrete"}, {"x": 7, "y": 2, "h": 15, "material": "concrete"}, {"x": 8, "y": 2, "h": 15, "material": "concrete"}, {"x": 8, "y": 1, "h": 15, "material": "concrete"}, {"x": 5, "y": 7, "h": 5, "material": "concrete"}, {"x": 4, "y": 6, "h": 5, "material": "concrete"}, {"x": 5, "y": 8, "h": 5, "material": "concrete"}, {"x": 4, "y": 9, "h": 5, "material": "concrete"}, {"x": 7, "y": 1, "h": 15, "material": "concrete"}, {"x": 4, "y": 5, "h": 20, "material": "hospital"}],
-            sources: [{x: 3, y: 3, intensity: 1000}, {x: 6, y: 6, intensity: 800}]
+            // Real OSM data: 76 cells with buildings, center 41.3887°N 2.1635°E, zoom 17
+            // Dense European Eixample district — most cells have buildings
+            buildings: [
+                {x:0,y:0,h:15,material:"concrete"},{x:0,y:1,h:15,material:"concrete"},{x:0,y:2,h:15,material:"concrete"},{x:0,y:3,h:5,material:"concrete"},
+                {x:0,y:5,h:15,material:"concrete"},{x:0,y:6,h:15,material:"concrete"},{x:0,y:7,h:15,material:"concrete"},{x:0,y:8,h:15,material:"concrete"},{x:0,y:9,h:15,material:"concrete"},
+                {x:1,y:0,h:10,material:"concrete"},{x:1,y:1,h:15,material:"concrete"},{x:1,y:2,h:15,material:"concrete"},{x:1,y:3,h:10,material:"concrete"},
+                {x:1,y:5,h:15,material:"concrete"},{x:1,y:6,h:15,material:"concrete"},{x:1,y:7,h:15,material:"concrete"},{x:1,y:8,h:15,material:"concrete"},{x:1,y:9,h:15,material:"concrete"},
+                {x:2,y:0,h:5,material:"concrete"},{x:2,y:1,h:15,material:"concrete"},
+                {x:2,y:3,h:15,material:"concrete"},{x:2,y:4,h:15,material:"concrete"},{x:2,y:5,h:15,material:"concrete"},{x:2,y:6,h:15,material:"concrete"},{x:2,y:7,h:15,material:"concrete"},{x:2,y:8,h:15,material:"concrete"},
+                {x:3,y:0,h:15,material:"concrete"},{x:3,y:2,h:15,material:"concrete"},{x:3,y:3,h:10,material:"concrete"},{x:3,y:4,h:15,material:"concrete"},
+                {x:3,y:7,h:15,material:"concrete"},{x:3,y:8,h:10,material:"concrete"},{x:3,y:9,h:10,material:"concrete"},
+                {x:4,y:0,h:10,material:"concrete"},{x:4,y:1,h:15,material:"concrete"},{x:4,y:2,h:10,material:"concrete"},{x:4,y:3,h:15,material:"concrete"},{x:4,y:4,h:5,material:"concrete"},
+                {x:5,y:0,h:15,material:"concrete"},{x:5,y:1,h:15,material:"concrete"},{x:5,y:2,h:15,material:"concrete"},{x:5,y:3,h:15,material:"concrete"},{x:5,y:4,h:15,material:"concrete"},
+                {x:5,y:5,h:10,material:"concrete"},{x:5,y:7,h:5,material:"concrete"},{x:5,y:9,h:5,material:"concrete"},
+                {x:6,y:0,h:15,material:"concrete"},{x:6,y:1,h:5,material:"concrete"},{x:6,y:2,h:15,material:"concrete"},{x:6,y:3,h:10,material:"concrete"},{x:6,y:4,h:10,material:"concrete"},
+                {x:6,y:5,h:5,material:"concrete"},{x:6,y:6,h:10,material:"concrete"},{x:6,y:7,h:5,material:"concrete"},{x:6,y:9,h:5,material:"concrete"},
+                {x:7,y:0,h:15,material:"concrete"},{x:7,y:1,h:5,material:"concrete"},{x:7,y:2,h:5,material:"concrete"},{x:7,y:3,h:10,material:"concrete"},{x:7,y:4,h:5,material:"concrete"},
+                {x:7,y:5,h:10,material:"concrete"},{x:7,y:6,h:10,material:"concrete"},{x:7,y:9,h:15,material:"concrete"},
+                {x:8,y:0,h:10,material:"concrete"},{x:8,y:2,h:10,material:"concrete"},{x:8,y:4,h:15,material:"concrete"},
+                {x:8,y:5,h:10,material:"concrete"},{x:8,y:6,h:5,material:"concrete"},{x:8,y:8,h:10,material:"concrete"},{x:8,y:9,h:15,material:"concrete"},
+                {x:9,y:1,h:10,material:"concrete"},{x:9,y:2,h:5,material:"concrete"},{x:9,y:3,h:5,material:"concrete"},
+                {x:9,y:5,h:5,material:"concrete"},{x:9,y:7,h:15,material:"concrete"},{x:9,y:8,h:15,material:"concrete"}
+            ],
+            sources: [{x: 3, y: 3, intensity: 1200}, {x: 7, y: 6, intensity: 1000}]
         },
         'kolkata': {
-            buildings: [{"x": 3, "y": 4, "h": 5, "material": "hospital"}, {"x": 8, "y": 9, "h": 5, "material": "concrete"}, {"x": 7, "y": 9, "h": 5, "material": "hospital"}, {"x": 0, "y": 8, "h": 5, "material": "hospital"}, {"x": 0, "y": 6, "h": 5, "material": "concrete"}, {"x": 2, "y": 6, "h": 12, "material": "concrete"}, {"x": 4, "y": 2, "h": 5, "material": "concrete"}, {"x": 5, "y": 2, "h": 5, "material": "concrete"}, {"x": 1, "y": 3, "h": 5, "material": "concrete"}, {"x": 3, "y": 2, "h": 5, "material": "concrete"}, {"x": 0, "y": 3, "h": 5, "material": "concrete"}, {"x": 0, "y": 2, "h": 5, "material": "concrete"}, {"x": 5, "y": 1, "h": 5, "material": "concrete"}, {"x": 1, "y": 6, "h": 5, "material": "concrete"}, {"x": 4, "y": 6, "h": 5, "material": "concrete"}, {"x": 5, "y": 4, "h": 5, "material": "concrete"}, {"x": 6, "y": 0, "h": 5, "material": "concrete"}, {"x": 9, "y": 7, "h": 5, "material": "concrete"}, {"x": 8, "y": 6, "h": 5, "material": "concrete"}, {"x": 9, "y": 9, "h": 5, "material": "concrete"}, {"x": 9, "y": 6, "h": 5, "material": "concrete"}, {"x": 9, "y": 5, "h": 5, "material": "concrete"}, {"x": 8, "y": 8, "h": 5, "material": "concrete"}, {"x": 7, "y": 6, "h": 5, "material": "concrete"}, {"x": 8, "y": 4, "h": 5, "material": "concrete"}, {"x": 8, "y": 7, "h": 5, "material": "concrete"}, {"x": 7, "y": 4, "h": 5, "material": "concrete"}, {"x": 8, "y": 5, "h": 5, "material": "concrete"}, {"x": 9, "y": 4, "h": 5, "material": "concrete"}, {"x": 8, "y": 3, "h": 5, "material": "concrete"}, {"x": 9, "y": 8, "h": 5, "material": "concrete"}, {"x": 7, "y": 5, "h": 5, "material": "concrete"}, {"x": 6, "y": 8, "h": 5, "material": "concrete"}, {"x": 7, "y": 8, "h": 5, "material": "concrete"}, {"x": 6, "y": 9, "h": 5, "material": "concrete"}, {"x": 1, "y": 8, "h": 5, "material": "concrete"}, {"x": 1, "y": 5, "h": 5, "material": "concrete"}, {"x": 2, "y": 8, "h": 5, "material": "concrete"}, {"x": 3, "y": 8, "h": 5, "material": "concrete"}, {"x": 4, "y": 9, "h": 5, "material": "concrete"}, {"x": 6, "y": 3, "h": 5, "material": "concrete"}, {"x": 1, "y": 7, "h": 5, "material": "concrete"}, {"x": 5, "y": 9, "h": 5, "material": "concrete"}, {"x": 2, "y": 7, "h": 5, "material": "concrete"}, {"x": 1, "y": 9, "h": 5, "material": "concrete"}, {"x": 3, "y": 7, "h": 5, "material": "concrete"}, {"x": 0, "y": 9, "h": 5, "material": "concrete"}, {"x": 4, "y": 4, "h": 5, "material": "concrete"}, {"x": 5, "y": 8, "h": 5, "material": "concrete"}, {"x": 4, "y": 8, "h": 5, "material": "concrete"}, {"x": 4, "y": 7, "h": 5, "material": "concrete"}, {"x": 5, "y": 3, "h": 5, "material": "concrete"}, {"x": 2, "y": 4, "h": 5, "material": "concrete"}, {"x": 0, "y": 7, "h": 5, "material": "concrete"}, {"x": 2, "y": 9, "h": 5, "material": "concrete"}, {"x": 5, "y": 7, "h": 5, "material": "concrete"}, {"x": 3, "y": 6, "h": 5, "material": "concrete"}, {"x": 3, "y": 9, "h": 5, "material": "concrete"}, {"x": 9, "y": 1, "h": 5, "material": "concrete"}, {"x": 7, "y": 3, "h": 5, "material": "concrete"}, {"x": 8, "y": 1, "h": 5, "material": "concrete"}, {"x": 8, "y": 0, "h": 5, "material": "concrete"}, {"x": 9, "y": 3, "h": 5, "material": "concrete"}, {"x": 6, "y": 2, "h": 5, "material": "concrete"}, {"x": 7, "y": 2, "h": 5, "material": "concrete"}, {"x": 7, "y": 7, "h": 5, "material": "concrete"}, {"x": 6, "y": 5, "h": 5, "material": "concrete"}, {"x": 6, "y": 4, "h": 5, "material": "concrete"}, {"x": 6, "y": 7, "h": 5, "material": "concrete"}, {"x": 2, "y": 5, "h": 15, "material": "concrete"}],
-            sources: [{x: 4, y: 3, intensity: 1500}, {x: 7, y: 2, intensity: 1200}, {x: 1, y: 5, intensity: 1200}]
+            // Real OSM data: 69 cells with buildings, center 22.5395°N 88.3435°E, zoom 17
+            // 3 hospitals detected. Sparse in north (Maidan parkland), dense in south (urban fabric)
+            buildings: [
+                {x:0,y:3,h:10,material:"concrete"},{x:0,y:6,h:15,material:"concrete"},{x:0,y:7,h:20,material:"hospital"},{x:0,y:8,h:15,material:"concrete"},{x:0,y:9,h:15,material:"concrete"},
+                {x:1,y:4,h:5,material:"concrete"},{x:1,y:5,h:10,material:"concrete"},{x:1,y:6,h:5,material:"concrete"},
+                {x:1,y:7,h:15,material:"concrete"},{x:1,y:8,h:15,material:"concrete"},{x:1,y:9,h:15,material:"concrete"},
+                {x:2,y:4,h:5,material:"concrete"},{x:2,y:5,h:10,material:"concrete"},{x:2,y:6,h:10,material:"concrete"},
+                {x:2,y:7,h:15,material:"concrete"},{x:2,y:8,h:15,material:"concrete"},{x:2,y:9,h:15,material:"concrete"},
+                {x:3,y:3,h:5,material:"concrete"},{x:3,y:4,h:20,material:"hospital"},{x:3,y:6,h:10,material:"concrete"},
+                {x:3,y:7,h:15,material:"concrete"},{x:3,y:8,h:15,material:"concrete"},{x:3,y:9,h:15,material:"concrete"},
+                {x:4,y:3,h:5,material:"concrete"},{x:4,y:4,h:10,material:"concrete"},{x:4,y:5,h:5,material:"concrete"},{x:4,y:6,h:10,material:"concrete"},
+                {x:4,y:7,h:15,material:"concrete"},{x:4,y:8,h:15,material:"concrete"},{x:4,y:9,h:15,material:"concrete"},
+                {x:5,y:2,h:10,material:"concrete"},{x:5,y:4,h:10,material:"concrete"},
+                {x:5,y:7,h:15,material:"concrete"},{x:5,y:8,h:15,material:"concrete"},{x:5,y:9,h:15,material:"concrete"},
+                {x:6,y:0,h:5,material:"concrete"},{x:6,y:2,h:5,material:"concrete"},{x:6,y:4,h:10,material:"concrete"},{x:6,y:5,h:5,material:"concrete"},{x:6,y:6,h:5,material:"concrete"},
+                {x:6,y:7,h:10,material:"concrete"},{x:6,y:8,h:10,material:"concrete"},{x:6,y:9,h:15,material:"concrete"},
+                {x:7,y:3,h:10,material:"concrete"},{x:7,y:4,h:5,material:"concrete"},{x:7,y:5,h:10,material:"concrete"},{x:7,y:6,h:10,material:"concrete"},
+                {x:7,y:7,h:15,material:"concrete"},{x:7,y:8,h:20,material:"hospital"},{x:7,y:9,h:15,material:"concrete"},
+                {x:8,y:0,h:5,material:"concrete"},{x:8,y:1,h:5,material:"concrete"},{x:8,y:2,h:5,material:"concrete"},{x:8,y:3,h:5,material:"concrete"},
+                {x:8,y:4,h:15,material:"concrete"},{x:8,y:5,h:15,material:"concrete"},{x:8,y:6,h:15,material:"concrete"},
+                {x:8,y:7,h:15,material:"concrete"},{x:8,y:8,h:15,material:"concrete"},{x:8,y:9,h:10,material:"concrete"},
+                {x:9,y:0,h:5,material:"concrete"},{x:9,y:2,h:5,material:"concrete"},{x:9,y:3,h:10,material:"concrete"},
+                {x:9,y:4,h:15,material:"concrete"},{x:9,y:5,h:15,material:"concrete"},{x:9,y:6,h:15,material:"concrete"},
+                {x:9,y:7,h:10,material:"concrete"},{x:9,y:8,h:10,material:"concrete"},{x:9,y:9,h:10,material:"concrete"}
+            ],
+            sources: [{x: 4, y: 7, intensity: 1500}, {x: 8, y: 5, intensity: 1200}, {x: 1, y: 9, intensity: 1000}]
         }
     };
 
