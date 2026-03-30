@@ -167,15 +167,15 @@ def grid_sim():
             if profile == 'Dense Urban':
                 h_w = np.random.uniform(2.0, 3.0)
                 alpha = np.random.beta(1, 4) # low absorption
-                noise_std = 1.2 # Low uncertainty
+                noise_std = np.random.uniform(0.8, 1.8) # Randomized low uncertainty
             elif profile == 'Suburban':
                 h_w = np.random.uniform(0.5, 1.2)
                 alpha = np.random.beta(4, 2) # high absorption
-                noise_std = 2.5 # Medium uncertainty
+                noise_std = np.random.uniform(1.8, 3.5) # Randomized medium uncertainty
             else: # Mixed
                 h_w = np.random.uniform(0.5, 2.5)
                 alpha = np.random.beta(2, 5)
-                noise_std = 4.0 # High uncertainty (highly irregular)
+                noise_std = np.random.uniform(3.0, 6.0) # Randomized high uncertainty
                 
             # Simulate M=500 trials per cell (simplified for performance)
             base_lw = 95 + np.random.normal(0, 1.5) # Add cell-specific source variation
