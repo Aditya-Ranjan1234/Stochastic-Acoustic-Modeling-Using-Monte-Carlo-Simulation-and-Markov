@@ -186,9 +186,7 @@ def grid_sim():
         "ci_grid": grid_ci.tolist()
     })
 
-# Create the global mesh for the demo
-scene_mesh = create_irregular_room()
-
+@app.route('/api/simulate', methods=['POST'])
 @app.route('/simulate', methods=['POST'])
 def run_simulation():
     try:
@@ -197,6 +195,9 @@ def run_simulation():
         max_bounces = int(data.get('max_bounces', 10))
         
         # 2. Configure Simulation using our unified engine
+        # Lazy initialize mesh to avoid cold start issues
+        scene_mesh = create_irregular_room()
+        
         materials_path = os.path.join(project_root, "materials", "config.json")
         sim = MonteCarloSimulation(
             scene_mesh=scene_mesh,

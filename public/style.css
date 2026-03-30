@@ -458,3 +458,37 @@ input[type="range"] {
     padding: 8px 24px;
     font-size: 0.85rem;
 }
+
+/* FORMULA STYLES */
+.formula-card {
+    margin-top: 25px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+}
+
+.formula-card h4 {
+    font-size: 0.85rem;
+    color: var(--primary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.formula {
+    font-family: 'Times New Roman', serif;
+    font-size: 1.2rem;
+    font-style: italic;
+    color: #fff;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.formula-card small {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 5px;
+}

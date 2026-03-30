@@ -70,6 +70,12 @@
                             <div class="value" id="stat-points">0</div>
                         </div>
                     </div>
+
+                    <div class="formula-card glass-panel">
+                        <h4>Monte Carlo Ray Tracing</h4>
+                        <p class="formula">I(t) = ∑ Eᵢ δ(t - tᵢ)</p>
+                        <small>Energy accumulation at time <i>t</i></small>
+                    </div>
                 </aside>
 
                 <main class="results-area">
@@ -141,6 +147,13 @@
                         <input type="range" id="canyon-lw" min="80" max="110" step="1" value="90">
                         <span class="range-val" id="val-lw">90</span>
                     </div>
+
+                    <div class="formula-card glass-panel">
+                        <h4>Markov State Transition</h4>
+                        <p class="formula">Pᵢⱼ = P(Xₙ₊₁ = j | Xₙ = i)</p>
+                        <p class="formula">Lₚ = Lw + 10 log₁₀(πᵣ) - 20 log₁₀(r)</p>
+                        <small>SPL based on stationary distribution π</small>
+                    </div>
                 </aside>
 
                 <main class="results-area">
@@ -179,6 +192,11 @@
                         <div class="convergence-stats">
                             <div class="c-stat">Samples: <span id="conv-n">0</span></div>
                             <div class="c-stat">CI Width: <span id="conv-ci">0.0</span> dB</div>
+                        </div>
+                        <div class="formula-card glass-panel" style="margin-top: 1rem;">
+                            <h4>Law of Large Numbers</h4>
+                            <p class="formula">SE = σ / √N</p>
+                            <small>Standard error decreases with sample size N</small>
                         </div>
                     </div>
                 </div>
