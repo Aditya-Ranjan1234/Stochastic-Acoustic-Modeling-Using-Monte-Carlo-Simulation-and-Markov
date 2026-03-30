@@ -229,20 +229,26 @@ def planner_sim():
             # 1. Calculate source-to-receiver noise with building attenuation
             base_noise_energy = 0
             for src in sources:
-                dist = np.sqrt((src['x'] - i)**2 + (src['y'] - j)**2)
+                src_x = src.get('x', 0)
+                src_y = src.get('y', 0)
+                src_intensity = src.get('intensity', 1000)
+                dist = np.sqrt((src_x - i)**2 + (src_y - j)**2)
                 
                 # Check if any building is between source and current cell
                 attenuation = 1.0
                 for b in buildings:
+                    bx = b.get('x', -1)
+                    by = b.get('y', -1)
                     # Simple shadowing: if building is on the same line or very close
-                    # For a 10x10 grid, we check if the building is roughly between
-                    if min(src['x'], i) <= b['x'] <= max(src['x'], i) and \
-                       min(src['y'], j) <= b['y'] <= max(src['y'], j):
-                        if (b['x'] != i or b['y'] != j) and (b['x'] != src['x'] or b['y'] != src['y']):
-                            attenuation *= (1.0 - materials.get(b['material'], materials['concrete'])['alpha'])
+                    if min(src_x, i) <= bx <= max(src_x, i) and \
+                       min(src_y, j) <= by <= max(src_y, j):
+                        if (bx != i or by != j) and (bx != src_x or by != src_y):
+                            mat_name = b.get('material', 'concrete')
+                            mat_properties = materials.get(mat_name, materials['concrete'])
+                            attenuation *= (1.0 - mat_properties.get('alpha', 0.2))
                 
                 # Inverse square law with shadowing
-                base_noise_energy += (src['intensity'] * attenuation) / (dist**2 + 1.0)
+                base_noise_energy += (src_intensity * attenuation) / (dist**2 + 1.0)
             
             # 2. Local surface interactions
             local_alpha = 0.1
@@ -250,18 +256,20 @@ def planner_sim():
             local_noise_std = 1.0
             
             for b in buildings:
-                if b['x'] == i and b['y'] == j:
-                    m = materials.get(b['material'], materials['concrete'])
-                    local_alpha = m['alpha']
-                    local_h_w = b['h'] / 5.0
-                    local_noise_std = m['noise']
+                bx = b.get('x', -1)
+                by = b.get('y', -1)
+                if bx == i and by == j:
+                    mat_name = b.get('material', 'concrete')
+                    m = materials.get(mat_name, materials['concrete'])
+                    local_alpha = m.get('alpha', 0.2)
+                    local_h_w = b.get('h', 5) / 5.0
+                    local_noise_std = m.get('noise', 1.0)
             
             # 3. Final SPL calculation
-            # Use 50dB as a quiet floor, energy adds logarithmically
             spl = 50 + 10 * np.log10(base_noise_energy + 1e-5) - (local_alpha * 10) + (local_h_w * 2)
             
-            # Make variance depend on buildings - more buildings = more scattering = more uncertainty
-            building_influence = sum(1 for b in buildings if abs(b['x']-i) <= 1 and abs(b['y']-j) <= 1)
+            # Make variance depend on buildings
+            building_influence = sum(1 for b in buildings if abs(b.get('x',-10)-i) <= 1 and abs(b.get('y',-10)-j) <= 1)
             dynamic_std = local_noise_std * (1.0 + 0.5 * building_influence)
             
             noise_samples = spl + np.random.normal(0, dynamic_std, 100)
