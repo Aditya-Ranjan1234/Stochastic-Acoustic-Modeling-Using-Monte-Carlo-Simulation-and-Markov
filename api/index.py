@@ -92,7 +92,7 @@ def solve_stationary(P):
     except:
         return np.ones(n) / n
 
-@app.route('/api/canyon', methods=['POST'])
+@app.route('/canyon', methods=['POST'])
 def canyon_sim():
     data = request.json
     h_w = float(data.get('h_w', 1.0))
@@ -187,7 +187,7 @@ def grid_sim():
 # Create the global mesh for the demo
 scene_mesh = create_irregular_room()
 
-@app.route('/api/simulate', methods=['POST'])
+@app.route('/simulate', methods=['POST'])
 def run_simulation():
     try:
         data = request.json
