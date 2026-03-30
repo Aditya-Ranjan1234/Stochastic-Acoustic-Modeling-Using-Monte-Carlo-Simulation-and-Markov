@@ -20,18 +20,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Vercel path handling
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-@app.route('/')
-def index():
-    return send_from_directory(BASE_DIR, 'index.html')
-
-@app.route('/<path:path>')
-def catch_all(path):
-    if os.path.exists(os.path.join(BASE_DIR, path)):
-        return send_from_directory(BASE_DIR, path)
-    return send_from_directory(BASE_DIR, 'index.html')
 
 # --- Helper Functions for New Tabs ---
 
