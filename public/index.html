@@ -236,41 +236,54 @@
         <!-- INFERENCES TAB -->
         <div id="inferences-tab" class="tab-content hidden">
             <div class="inferences-grid">
+                <!-- 3D Simulation In-Depth -->
                 <div class="info-card glass-panel">
                     <div class="info-header">
                         <span class="num">01</span>
-                        <h3>Monte Carlo Ray Sampling</h3>
+                        <h3>3D Monte Carlo Ray Tracing</h3>
                     </div>
-                    <p>Traditional acoustic modeling often uses limited ray paths. Our system employs <strong>Monte Carlo sampling</strong> to generate thousands of unique trajectories, ensuring that every corner of an irregular geometry is explored.</p>
-                    <div class="tag">Spatial Completeness</div>
+                    <p><strong>How it works:</strong> The engine launches thousands of stochastic rays from a source. Each ray's trajectory is calculated using 3D mesh intersections (Trimesh/RTree). Unlike deterministic models, we sample the emission angle using a uniform distribution on a unit sphere.</p>
+                    <p><strong>Uniqueness:</strong> It captures "shadow zones" and complex scattering that 2D models miss. It creates a high-fidelity <i>Acoustic Impulse Response</i> by accumulating energy arrivals over time.</p>
+                    <div class="tag">Application: Concert Hall Design, Indoor Localization</div>
                 </div>
 
+                <!-- Street Canyon In-Depth -->
                 <div class="info-card glass-panel">
                     <div class="info-header">
                         <span class="num">02</span>
-                        <h3>Markovian State Transitions</h3>
-                        <span class="novelty-tag">CORE NOVELTY</span>
+                        <h3>Markovian Street Canyons</h3>
+                        <span class="novelty-tag">PROBABILISTIC COUPLING</span>
                     </div>
-                    <p>Unlike deterministic models where a ray simply reflects, our <strong>Markov engine</strong> treats each interaction as a probabilistic state. A ray might reflect, scatter, or be absorbed based on a transition matrix defined by the surface material.</p>
-                    <div class="matrix-demo">
-                        <div class="m-row"><span>Reflect</span> <span>85%</span></div>
-                        <div class="m-row"><span>Scatter</span> <span>10%</span></div>
-                        <div class="m-row"><span>Absorb</span> <span>5%</span></div>
-                    </div>
+                    <p><strong>How it works:</strong> We model an urban street as a system of coupled states (Left Facade, Right Facade, Ground, Sky). The 5x5 transition matrix <i>P</i> defines the probability of sound moving between these surfaces based on geometric aspect ratios (H/W) and absorption coefficients.</p>
+                    <p><strong>Uniqueness:</strong> Instead of tracing individual rays, we solve the <i>Stationary Distribution</i> (πP = π) to find long-term noise equilibrium. This is mathematically equivalent to infinite ray bounces.</p>
+                    <div class="tag">Application: Urban Noise Mapping, Traffic Planning</div>
                 </div>
 
+                <!-- Convergence In-Depth -->
                 <div class="info-card glass-panel">
                     <div class="info-header">
                         <span class="num">03</span>
-                        <h3>Irregular Geometries</h3>
+                        <h3>Stochastic Convergence (LLN)</h3>
                     </div>
-                    <p>Simple box rooms are rare in reality. By using <strong>Trimesh-based collision detection</strong>, we simulate sound propagation in complex, non-convex spaces (like L-shaped halls or curved auditoriums) where sound shadowing and secondary reflections are critical.</p>
-                    <div class="tag">Geometric Realism</div>
+                    <p><strong>How it works:</strong> This tab demonstrates the <i>Law of Large Numbers</i>. As we increase the number of Monte Carlo samples (N), the running mean of the Sound Pressure Level (SPL) converges to the true expected value. We calculate the 95% Confidence Interval using the Standard Error (σ/√N).</p>
+                    <p><strong>Uniqueness:</strong> It provides a "Reliability Metric" for the simulation. It tells the researcher exactly how many rays are needed to achieve a desired precision (e.g., ±0.5 dB).</p>
+                    <div class="tag">Application: Simulation Optimization, Error Budgeting</div>
+                </div>
+
+                <!-- Urban Grid In-Depth -->
+                <div class="info-card glass-panel">
+                    <div class="info-header">
+                        <span class="num">04</span>
+                        <h3>Macro-Scale Urban Grids</h3>
+                    </div>
+                    <p><strong>How it works:</strong> We scale the micro-level Markov models to a 4x4 city grid. Each cell represents a different urban profile (Dense, Suburban, Mixed) with randomized building heights and surface materials. We run parallel simulations to generate a city-wide noise heatmap.</p>
+                    <p><strong>Uniqueness:</strong> It bridges the gap between single-building acoustics and city-wide environmental impact. It visualizes not just the <i>mean</i> noise, but the <i>uncertainty</i> (Variance) of that noise.</p>
+                    <div class="tag">Application: Smart City Sensors, Zoning Laws</div>
                 </div>
 
                 <div class="info-card glass-panel highlight">
-                    <h3>Research Summary</h3>
-                    <p>The combination of stochastic sampling and probabilistic transitions provides a more realistic approximation of diffuse sound fields than standard ray-tracing. This approach is particularly effective for predicting reverberation in spaces with highly varied materials.</p>
+                    <h3>Scientific Application & Future Scope</h3>
+                    <p>This research framework is unique because it combines <strong>Geometric Ray Tracing</strong> (short-term/direct sound) with <strong>Markovian Probability</strong> (long-term/reverberant field). It replaces heavy computational fluid dynamics with efficient stochastic approximations, making real-time urban acoustic planning possible on web-based platforms.</p>
                 </div>
             </div>
         </div>
