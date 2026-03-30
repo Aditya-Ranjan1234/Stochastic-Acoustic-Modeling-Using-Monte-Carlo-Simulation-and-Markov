@@ -20,7 +20,16 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+# --- Local Static File Serving ---
+PUBLIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'public')
 
+@app.route('/')
+def index():
+    return send_from_directory(PUBLIC_DIR, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory(PUBLIC_DIR, path)
 
 # --- Helper Functions for New Tabs ---
 
@@ -188,6 +197,99 @@ def grid_sim():
         "spl_grid": grid_spl.tolist(),
         "ci_grid": grid_ci.tolist()
     })
+
+# --- CITY PLANNER ENDPOINTS ---
+
+@app.route('/api/planner/simulate', methods=['POST'])
+@app.route('/planner/simulate', methods=['POST'])
+def planner_sim():
+    """
+    Handles interactive city builder simulation.
+    Input: list of buildings (x, y, h, material) and sources.
+    Output: 10x10 high-res heatmap and variance map.
+    """
+    data = request.json
+    buildings = data.get('buildings', [])
+    sources = data.get('sources', [])
+    
+    # 10x10 micro-grid for high resolution
+    grid_size = 10
+    spl_map = np.zeros((grid_size, grid_size))
+    var_map = np.zeros((grid_size, grid_size))
+    
+    # Material database
+    materials = {
+        "glass": {"alpha": 0.05, "noise": 0.8},
+        "concrete": {"alpha": 0.2, "noise": 1.5},
+        "vegetation": {"alpha": 0.7, "noise": 3.5},
+        "barrier": {"alpha": 0.9, "noise": 0.5}
+    }
+    
+    for i in range(grid_size):
+        for j in range(grid_size):
+            # Base noise from sources
+            base_noise = 0
+            for src in sources:
+                dist = np.sqrt((src['x'] - i)**2 + (src['y'] - j)**2) + 0.1
+                base_noise += src['intensity'] / (dist**2)
+            
+            # Factor in building interactions
+            local_alpha = 0.1 # Default air absorption
+            local_h_w = 0.5   # Default open space
+            local_noise_std = 1.0
+            
+            for b in buildings:
+                if b['x'] == i and b['y'] == j:
+                    m = materials.get(b['material'], materials['concrete'])
+                    local_alpha = m['alpha']
+                    local_h_w = b['h'] / 5.0
+                    local_noise_std = m['noise']
+            
+            # Stochastic simulation
+            samples = 100 + 10 * np.log10(base_noise + 1e-10) - (local_alpha * 25) + (local_h_w * 5)
+            noise_samples = samples + np.random.normal(0, local_noise_std, 100)
+            
+            spl_map[i, j] = np.mean(noise_samples)
+            var_map[i, j] = np.std(noise_samples)
+            
+    return jsonify({
+        "spl": spl_map.tolist(),
+        "variance": var_map.tolist()
+    })
+
+@app.route('/api/planner/suggest', methods=['POST'])
+@app.route('/planner/suggest', methods=['POST'])
+def planner_suggest():
+    """
+    Suggests improvements based on high SPL or high Variance.
+    """
+    data = request.json
+    spl_map = np.array(data.get('spl'))
+    var_map = np.array(data.get('variance'))
+    
+    suggestions = []
+    
+    # Find max SPL zone
+    max_idx = np.unravel_index(np.argmax(spl_map), spl_map.shape)
+    if spl_map[max_idx] > 75:
+        suggestions.append({
+            "x": int(max_idx[0]),
+            "y": int(max_idx[1]),
+            "type": "barrier",
+            "reason": f"High Noise Level ({round(spl_map[max_idx], 1)} dB)"
+        })
+        
+    # Find max Variance zone
+    var_idx = np.unravel_index(np.argmax(var_map), var_map.shape)
+    if var_map[var_idx] > 3.0:
+        suggestions.append({
+            "x": int(var_idx[0]),
+            "y": int(var_idx[1]),
+            "type": "vegetation",
+            "reason": "High Predictive Uncertainty (Irregular scattering)"
+        })
+        
+    return jsonify({"suggestions": suggestions})
 
 @app.route('/api/simulate', methods=['POST'])
 @app.route('/simulate', methods=['POST'])

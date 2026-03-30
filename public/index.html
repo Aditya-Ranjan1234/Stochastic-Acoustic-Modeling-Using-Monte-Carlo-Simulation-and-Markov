@@ -18,6 +18,7 @@
             <a href="#" onclick="showTab('canyon')">Street Canyon</a>
             <a href="#" onclick="showTab('convergence')">Convergence</a>
             <a href="#" onclick="showTab('grid')">Urban Grid</a>
+            <a href="#" onclick="showTab('planner')">City Planner</a>
             <a href="#" onclick="showTab('inferences')">Research Inferences</a>
         </div>
     </nav>
@@ -228,6 +229,74 @@
                             <h3>Uncertainty (95% CI Width)</h3>
                             <div id="grid-ci-map" class="urban-grid"></div>
                         </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- CITY PLANNER TAB -->
+        <div id="planner-tab" class="tab-content hidden">
+            <div class="dashboard-grid">
+                <aside class="sidebar glass-panel">
+                    <div class="section-title">
+                        <span class="icon">🏗️</span>
+                        <h2>City Builder</h2>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Map Presets</label>
+                        <select id="map-presets" class="preset-select">
+                            <option value="empty">Empty Canvas</option>
+                            <option value="main-street">Main Street (High-Rise)</option>
+                            <option value="courtyard">Residential Courtyard</option>
+                            <option value="industrial">Industrial Hub</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Active Tool</label>
+                        <div class="tool-selector">
+                            <button class="tool-btn active" data-tool="building">Building</button>
+                            <button class="tool-btn" data-tool="source">Noise Source</button>
+                            <button class="tool-btn" data-tool="eraser">Eraser</button>
+                        </div>
+                    </div>
+
+                    <div id="building-controls">
+                        <div class="control-group">
+                            <label>Building Height</label>
+                            <input type="range" id="planner-h" min="1" max="10" value="5">
+                        </div>
+                        <div class="control-group">
+                            <label>Material</label>
+                            <select id="planner-material">
+                                <option value="glass">Glass (Reflective)</option>
+                                <option value="concrete">Concrete (Medium)</option>
+                                <option value="vegetation">Green Wall (Absorptive)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="run-planner" class="primary-btn">Update Simulation</button>
+                    <button id="suggest-btn" class="secondary-btn" style="margin-top: 10px;">Suggest Improvements</button>
+                    
+                    <div class="layer-toggles" style="margin-top: 20px;">
+                        <label>Display Layer</label>
+                        <div class="toggle-group">
+                            <button class="layer-btn active" data-layer="spl">Noise (SPL)</button>
+                            <button class="layer-btn" data-layer="variance">Uncertainty</button>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="results-area">
+                    <div class="planner-canvas-container glass-panel">
+                        <canvas id="planner-canvas" width="600" height="600"></canvas>
+                        <div id="planner-overlay" class="heatmap-overlay"></div>
+                    </div>
+                    <div id="suggestion-box" class="suggestion-card glass-panel hidden">
+                        <h4>Planner Insights</h4>
+                        <ul id="suggestion-list"></ul>
                     </div>
                 </main>
             </div>

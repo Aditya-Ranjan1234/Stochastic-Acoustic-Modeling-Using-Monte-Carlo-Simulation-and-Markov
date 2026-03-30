@@ -283,6 +283,205 @@ document.addEventListener('DOMContentLoaded', () => {
 
     refreshGridBtn.addEventListener('click', updateGrid);
     updateGrid();
+
+    // --- CITY PLANNER LOGIC ---
+    const plannerCanvas = document.getElementById('planner-canvas');
+    const ctx = plannerCanvas.getContext('2d');
+    const plannerOverlay = document.getElementById('planner-overlay');
+    const toolBtns = document.querySelectorAll('.tool-btn');
+    const layerBtns = document.querySelectorAll('.layer-btn');
+    const runPlannerBtn = document.getElementById('run-planner');
+    const suggestBtn = document.getElementById('suggest-btn');
+    const suggestionBox = document.getElementById('suggestion-box');
+    const suggestionList = document.getElementById('suggestion-list');
+    const presetSelect = document.getElementById('map-presets');
+
+    let currentTool = 'building';
+    let currentLayer = 'spl';
+    let buildings = [];
+    let sources = [];
+    let lastSimData = null;
+
+    // Map Presets Data
+    const PRESETS = {
+        'empty': { buildings: [], sources: [] },
+        'main-street': {
+            buildings: [
+                {x: 2, y: 0, h: 8, material: 'glass'}, {x: 2, y: 1, h: 8, material: 'glass'}, {x: 2, y: 2, h: 8, material: 'glass'},
+                {x: 2, y: 3, h: 8, material: 'glass'}, {x: 2, y: 4, h: 8, material: 'glass'}, {x: 2, y: 5, h: 8, material: 'glass'},
+                {x: 7, y: 0, h: 10, material: 'concrete'}, {x: 7, y: 1, h: 10, material: 'concrete'}, {x: 7, y: 2, h: 10, material: 'concrete'},
+                {x: 7, y: 3, h: 10, material: 'concrete'}, {x: 7, y: 4, h: 10, material: 'concrete'}, {x: 7, y: 5, h: 10, material: 'concrete'}
+            ],
+            sources: [{x: 4, y: 2, intensity: 1200}, {x: 5, y: 4, intensity: 1200}]
+        },
+        'courtyard': {
+            buildings: [
+                {x: 3, y: 3, h: 4, material: 'vegetation'}, {x: 3, y: 4, h: 4, material: 'vegetation'}, {x: 3, y: 5, h: 4, material: 'vegetation'},
+                {x: 6, y: 3, h: 4, material: 'vegetation'}, {x: 6, y: 4, h: 4, material: 'vegetation'}, {x: 6, y: 5, h: 4, material: 'vegetation'},
+                {x: 4, y: 2, h: 6, material: 'concrete'}, {x: 5, y: 2, h: 6, material: 'concrete'},
+                {x: 4, y: 6, h: 6, material: 'concrete'}, {x: 5, y: 6, h: 6, material: 'concrete'}
+            ],
+            sources: [{x: 4, y: 4, intensity: 800}]
+        },
+        'industrial': {
+            buildings: [
+                {x: 1, y: 1, h: 12, material: 'concrete'}, {x: 1, y: 2, h: 12, material: 'concrete'},
+                {x: 8, y: 7, h: 15, material: 'glass'}, {x: 8, y: 8, h: 15, material: 'glass'},
+                {x: 4, y: 4, h: 5, material: 'concrete'}
+            ],
+            sources: [{x: 2, y: 2, intensity: 2000}, {x: 7, y: 7, intensity: 2000}, {x: 5, y: 1, intensity: 1500}]
+        }
+    };
+
+    presetSelect.addEventListener('change', (e) => {
+        const preset = PRESETS[e.target.value];
+        if (preset) {
+            buildings = JSON.parse(JSON.stringify(preset.buildings));
+            sources = JSON.parse(JSON.stringify(preset.sources));
+            drawGrid();
+            plannerOverlay.innerHTML = '';
+            lastSimData = null;
+            suggestionBox.classList.add('hidden');
+        }
+    });
+
+    // Canvas Constants
+    const GRID_SIZE = 10;
+    const CELL_PX = plannerCanvas.width / GRID_SIZE;
+
+    const drawGrid = () => {
+        ctx.clearRect(0, 0, plannerCanvas.width, plannerCanvas.height);
+        ctx.strokeStyle = '#333';
+        for(let i=0; i<=GRID_SIZE; i++) {
+            ctx.beginPath();
+            ctx.moveTo(i * CELL_PX, 0);
+            ctx.lineTo(i * CELL_PX, plannerCanvas.height);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, i * CELL_PX);
+            ctx.lineTo(plannerCanvas.width, i * CELL_PX);
+            ctx.stroke();
+        }
+
+        buildings.forEach(b => {
+            const hue = b.material === 'glass' ? 200 : b.material === 'concrete' ? 0 : 120;
+            ctx.fillStyle = `hsla(${hue}, 70%, 50%, 0.8)`;
+            ctx.fillRect(b.x * CELL_PX + 5, b.y * CELL_PX + 5, CELL_PX - 10, CELL_PX - 10);
+            ctx.fillStyle = '#fff';
+            ctx.font = '10px Arial';
+            ctx.fillText(`${b.h}m`, b.x * CELL_PX + 15, b.y * CELL_PX + CELL_PX - 15);
+        });
+
+        sources.forEach(s => {
+            ctx.fillStyle = '#ff4b2b';
+            ctx.beginPath();
+            ctx.arc(s.x * CELL_PX + CELL_PX/2, s.y * CELL_PX + CELL_PX/2, 8, 0, Math.PI*2);
+            ctx.fill();
+            // Pulse effect
+            ctx.strokeStyle = '#ff4b2b';
+            ctx.beginPath();
+            ctx.arc(s.x * CELL_PX + CELL_PX/2, s.y * CELL_PX + CELL_PX/2, 12, 0, Math.PI*2);
+            ctx.stroke();
+        });
+    };
+
+    plannerCanvas.addEventListener('mousedown', (e) => {
+        handlePointer(e);
+    });
+
+    plannerCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handlePointer(e.touches[0]);
+    }, { passive: false });
+
+    const handlePointer = (e) => {
+        const rect = plannerCanvas.getBoundingClientRect();
+        const scaleX = plannerCanvas.width / rect.width;
+        const scaleY = plannerCanvas.height / rect.height;
+        const x = Math.floor(((e.clientX - rect.left) * scaleX) / CELL_PX);
+        const y = Math.floor(((e.clientY - rect.top) * scaleY) / CELL_PX);
+
+        if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) return;
+
+        if (currentTool === 'eraser') {
+            buildings = buildings.filter(b => b.x !== x || b.y !== y);
+            sources = sources.filter(s => s.x !== x || s.y !== y);
+        } else if (currentTool === 'building') {
+            const h = document.getElementById('planner-h').value;
+            const material = document.getElementById('planner-material').value;
+            buildings = buildings.filter(b => b.x !== x || b.y !== y);
+            buildings.push({ x, y, h: parseInt(h), material });
+        } else if (currentTool === 'source') {
+            sources = sources.filter(s => s.x !== x || s.y !== y);
+            sources.push({ x, y, intensity: 1000 });
+        }
+        drawGrid();
+    };
+
+    toolBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            toolBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTool = btn.dataset.tool;
+        });
+    });
+
+    layerBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            layerBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentLayer = btn.dataset.layer;
+            if (lastSimData) renderPlannerHeatmap(lastSimData);
+        });
+    });
+
+    const renderPlannerHeatmap = (data) => {
+        plannerOverlay.innerHTML = '';
+        const map = currentLayer === 'spl' ? data.spl : data.variance;
+        const range = currentLayer === 'spl' ? [40, 90] : [0, 5];
+
+        for(let i=0; i<GRID_SIZE; i++) {
+            for(let j=0; j<GRID_SIZE; j++) {
+                const val = map[j][i];
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell';
+                const ratio = Math.max(0, Math.min(1, (val - range[0]) / (range[1] - range[0])));
+                const hue = currentLayer === 'spl' ? (1 - ratio) * 120 : 280;
+                cell.style.backgroundColor = `hsla(${hue}, 100%, 50%, 0.6)`;
+                plannerOverlay.appendChild(cell);
+            }
+        }
+    };
+
+    runPlannerBtn.addEventListener('click', async () => {
+        const response = await fetch('/api/planner/simulate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ buildings, sources })
+        });
+        lastSimData = await response.json();
+        renderPlannerHeatmap(lastSimData);
+    });
+
+    suggestBtn.addEventListener('click', async () => {
+        if (!lastSimData) return;
+        const response = await fetch('/api/planner/suggest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ spl: lastSimData.spl, variance: lastSimData.variance })
+        });
+        const data = await response.json();
+        
+        suggestionBox.classList.remove('hidden');
+        suggestionList.innerHTML = '';
+        data.suggestions.forEach(s => {
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>Block (${s.x}, ${s.y}):</strong> Suggested <i>${s.type}</i>. Reason: ${s.reason}`;
+            suggestionList.appendChild(li);
+        });
+    });
+
+    drawGrid();
 });
 
 function showTab(tabId) {

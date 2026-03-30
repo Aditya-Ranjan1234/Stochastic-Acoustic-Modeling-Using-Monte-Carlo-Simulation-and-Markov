@@ -60,6 +60,14 @@ By using **Monte Carlo Sampling** and **Markov Processes**, we replace heavy com
     - It generates two maps: **Mean Noise (SPL)** and **Uncertainty (Variance)**.
 *   **Unique Feature**: Most noise maps only show the average noise. Ours shows the **Uncertainty**. If a cell has high uncertainty, it tells the planner that the noise there is highly unpredictable due to the building layout.
 
+### **Tab 5: Interactive City Planner (The Decision Engine)**
+*   **What it is**: A high-resolution interactive builder for "what-if" scenarios.
+*   **How it works**:
+    - **City Builder**: Allows drawing buildings with specific heights and materials (Glass, Concrete, Vegetation).
+    - **Micro-Simulation**: Runs a high-resolution 10x10 stochastic grid.
+    - **Suggest Improvements**: An automated analyzer that detects high-noise zones and suggests mitigation (e.g., green walls or barriers).
+*   **Unique Feature**: It bridges the gap between raw simulation and actionable planning. It provides "Decision Intelligence" by identifying not just *where* it is loud, but *why* (high variance vs. high volume).
+
 ---
 
 ## 4. Scientific Uniqueness

@@ -493,6 +493,134 @@ input[type="range"] {
     margin-top: 5px;
 }
 
+/* CITY PLANNER STYLES */
+.tool-selector, .toggle-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.tool-btn, .layer-btn {
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.preset-select {
+    width: 100%;
+    padding: 12px;
+    background: #1e293b; /* Solid dark background for consistency */
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 0.85rem;
+    appearance: none; /* Remove default styling */
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+.preset-select option {
+    background-color: #0f172a;
+    color: white;
+}
+
+#planner-material {
+    width: 100%;
+    padding: 12px;
+    background: #1e293b;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+#planner-material option {
+    background-color: #0f172a;
+    color: white;
+}
+
+.tool-btn.active, .layer-btn.active {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+}
+
+.planner-canvas-container {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    margin: 0 auto;
+    background: #000;
+    overflow: hidden;
+}
+
+#planner-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.heatmap-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+}
+
+.heatmap-cell {
+    opacity: 0.5;
+}
+
+.suggestion-card {
+    margin-top: 30px;
+    padding: 25px;
+    border-left: 4px solid var(--primary);
+}
+
+.suggestion-card h4 {
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.suggestion-card ul {
+    list-style: none;
+}
+
+.suggestion-card li {
+    padding: 8px 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.secondary-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--primary);
+    border-radius: 10px;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+}
+
 /* RESPONSIVE DESIGN */
 @media (max-width: 1200px) {
     .dashboard-grid {
@@ -529,7 +657,29 @@ input[type="range"] {
     }
 
     .container {
-        padding: 0 15px 20px;
+        padding: 0 10px 20px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .planner-canvas-container {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    #planner-canvas {
+        width: 100% !important;
+        height: auto !important;
+        position: relative;
+    }
+
+    .heatmap-overlay {
+        width: 100%;
+        height: 100%;
     }
 
     .plots-grid {
@@ -544,10 +694,11 @@ input[type="range"] {
         flex-direction: column;
         gap: 10px;
         text-align: center;
+        padding: 15px;
     }
 
     .spl-readout span {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
 
     .convergence-layout {
