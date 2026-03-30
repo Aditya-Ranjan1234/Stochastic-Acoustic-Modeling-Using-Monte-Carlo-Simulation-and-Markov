@@ -92,6 +92,7 @@ def solve_stationary(P):
     except:
         return np.ones(n) / n
 
+@app.route('/api/canyon', methods=['POST'])
 @app.route('/canyon', methods=['POST'])
 def canyon_sim():
     data = request.json
@@ -153,6 +154,7 @@ def convergence_sim():
     })
 
 @app.route('/api/grid', methods=['POST'])
+@app.route('/grid', methods=['POST'])
 def grid_sim():
     data = request.json
     profile = data.get('profile', 'Mixed')
