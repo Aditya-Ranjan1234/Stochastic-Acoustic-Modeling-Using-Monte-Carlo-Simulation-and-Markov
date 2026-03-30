@@ -302,6 +302,33 @@ document.addEventListener('DOMContentLoaded', () => {
     let sources = [];
     let lastSimData = null;
 
+    // Leaflet Map Initialization
+    let leafletMap = null;
+    const initMap = () => {
+        if (leafletMap) return;
+        leafletMap = L.map('map', {
+            zoomControl: false,
+            attributionControl: false,
+            dragging: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+            touchZoom: false
+        }).setView([41.388, 2.163], 17);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(leafletMap);
+    };
+
+    const setMapView = (city) => {
+        if (!leafletMap) initMap();
+        if (city === 'barcelona') {
+            leafletMap.setView([41.3887, 2.1635], 17);
+        } else if (city === 'kolkata') {
+            leafletMap.setView([22.5395, 88.3435], 17);
+        }
+    };
     // Map Presets Data
     const PRESETS = {
         'empty': { buildings: [], sources: [] },
@@ -332,37 +359,35 @@ document.addEventListener('DOMContentLoaded', () => {
             sources: [{x: 2, y: 2, intensity: 2000}, {x: 7, y: 7, intensity: 2000}, {x: 5, y: 1, intensity: 1500}]
         },
         'barcelona': {
-            buildings: [
-                {x: 1, y: 1, h: 6, material: 'concrete'}, {x: 1, y: 2, h: 6, material: 'concrete'},
-                {x: 2, y: 1, h: 6, material: 'concrete'}, {x: 2, y: 2, h: 6, material: 'concrete'},
-                {x: 4, y: 1, h: 6, material: 'concrete'}, {x: 4, y: 2, h: 6, material: 'concrete'},
-                {x: 5, y: 1, h: 6, material: 'concrete'}, {x: 5, y: 2, h: 6, material: 'concrete'},
-                {x: 1, y: 4, h: 6, material: 'concrete'}, {x: 1, y: 5, h: 6, material: 'concrete'},
-                {x: 2, y: 4, h: 6, material: 'concrete'}, {x: 2, y: 5, h: 6, material: 'concrete'},
-                {x: 4, y: 4, h: 6, material: 'concrete'}, {x: 4, y: 5, h: 6, material: 'concrete'},
-                {x: 5, y: 4, h: 6, material: 'concrete'}, {x: 5, y: 5, h: 6, material: 'concrete'}
-            ],
-            sources: [{x: 3, y: 3, intensity: 1000}, {x: 3, y: 0, intensity: 800}, {x: 3, y: 6, intensity: 800}]
+            buildings: [{"x": 3, "y": 9, "h": 15, "material": "concrete"}, {"x": 6, "y": 7, "h": 5, "material": "concrete"}, {"x": 8, "y": 9, "h": 5, "material": "concrete"}, {"x": 8, "y": 8, "h": 5, "material": "concrete"}, {"x": 7, "y": 9, "h": 15, "material": "concrete"}, {"x": 6, "y": 9, "h": 15, "material": "concrete"}, {"x": 5, "y": 9, "h": 5, "material": "concrete"}, {"x": 1, "y": 9, "h": 15, "material": "concrete"}, {"x": 1, "y": 8, "h": 15, "material": "concrete"}, {"x": 0, "y": 9, "h": 5, "material": "concrete"}, {"x": 0, "y": 8, "h": 15, "material": "concrete"}, {"x": 1, "y": 5, "h": 5, "material": "concrete"}, {"x": 2, "y": 5, "h": 5, "material": "concrete"}, {"x": 0, "y": 5, "h": 5, "material": "concrete"}, {"x": 2, "y": 7, "h": 15, "material": "concrete"}, {"x": 2, "y": 4, "h": 5, "material": "concrete"}, {"x": 2, "y": 6, "h": 15, "material": "concrete"}, {"x": 0, "y": 3, "h": 5, "material": "concrete"}, {"x": 0, "y": 2, "h": 5, "material": "concrete"}, {"x": 2, "y": 8, "h": 15, "material": "concrete"}, {"x": 0, "y": 0, "h": 5, "material": "concrete"}, {"x": 1, "y": 2, "h": 5, "material": "concrete"}, {"x": 3, "y": 8, "h": 15, "material": "concrete"}, {"x": 2, "y": 1, "h": 5, "material": "concrete"}, {"x": 3, "y": 7, "h": 15, "material": "concrete"}, {"x": 1, "y": 3, "h": 5, "material": "concrete"}, {"x": 8, "y": 5, "h": 5, "material": "concrete"}, {"x": 2, "y": 3, "h": 15, "material": "concrete"}, {"x": 6, "y": 5, "h": 15, "material": "concrete"}, {"x": 2, "y": 0, "h": 5, "material": "concrete"}, {"x": 5, "y": 4, "h": 5, "material": "concrete"}, {"x": 3, "y": 2, "h": 15, "material": "concrete"}, {"x": 0, "y": 1, "h": 15, "material": "concrete"}, {"x": 6, "y": 4, "h": 5, "material": "concrete"}, {"x": 3, "y": 0, "h": 15, "material": "concrete"}, {"x": 7, "y": 5, "h": 5, "material": "concrete"}, {"x": 7, "y": 6, "h": 5, "material": "concrete"}, {"x": 1, "y": 0, "h": 5, "material": "concrete"}, {"x": 8, "y": 4, "h": 15, "material": "concrete"}, {"x": 4, "y": 1, "h": 5, "material": "concrete"}, {"x": 4, "y": 0, "h": 15, "material": "concrete"}, {"x": 7, "y": 4, "h": 5, "material": "concrete"}, {"x": 7, "y": 3, "h": 15, "material": "concrete"}, {"x": 1, "y": 7, "h": 5, "material": "concrete"}, {"x": 0, "y": 7, "h": 5, "material": "concrete"}, {"x": 0, "y": 6, "h": 5, "material": "concrete"}, {"x": 1, "y": 6, "h": 5, "material": "concrete"}, {"x": 6, "y": 6, "h": 15, "material": "concrete"}, {"x": 5, "y": 3, "h": 5, "material": "concrete"}, {"x": 6, "y": 3, "h": 5, "material": "concrete"}, {"x": 6, "y": 2, "h": 5, "material": "concrete"}, {"x": 3, "y": 4, "h": 5, "material": "concrete"}, {"x": 4, "y": 3, "h": 15, "material": "concrete"}, {"x": 5, "y": 5, "h": 15, "material": "concrete"}, {"x": 4, "y": 2, "h": 5, "material": "concrete"}, {"x": 5, "y": 2, "h": 5, "material": "concrete"}, {"x": 5, "y": 1, "h": 15, "material": "concrete"}, {"x": 6, "y": 1, "h": 15, "material": "concrete"}, {"x": 4, "y": 4, "h": 5, "material": "concrete"}, {"x": 3, "y": 3, "h": 15, "material": "concrete"}, {"x": 5, "y": 0, "h": 15, "material": "concrete"}, {"x": 8, "y": 6, "h": 5, "material": "concrete"}, {"x": 9, "y": 5, "h": 5, "material": "concrete"}, {"x": 1, "y": 1, "h": 15, "material": "concrete"}, {"x": 9, "y": 7, "h": 5, "material": "concrete"}, {"x": 9, "y": 8, "h": 5, "material": "concrete"}, {"x": 9, "y": 3, "h": 15, "material": "concrete"}, {"x": 9, "y": 2, "h": 15, "material": "concrete"}, {"x": 7, "y": 0, "h": 15, "material": "concrete"}, {"x": 6, "y": 0, "h": 15, "material": "concrete"}, {"x": 9, "y": 1, "h": 15, "material": "concrete"}, {"x": 8, "y": 0, "h": 15, "material": "concrete"}, {"x": 7, "y": 2, "h": 15, "material": "concrete"}, {"x": 8, "y": 2, "h": 15, "material": "concrete"}, {"x": 8, "y": 1, "h": 15, "material": "concrete"}, {"x": 5, "y": 7, "h": 5, "material": "concrete"}, {"x": 4, "y": 6, "h": 5, "material": "concrete"}, {"x": 5, "y": 8, "h": 5, "material": "concrete"}, {"x": 4, "y": 9, "h": 5, "material": "concrete"}, {"x": 7, "y": 1, "h": 15, "material": "concrete"}, {"x": 4, "y": 5, "h": 20, "material": "hospital"}],
+            sources: [{x: 3, y: 3, intensity: 1000}, {x: 6, y: 6, intensity: 800}]
         },
-        'favela': {
-            buildings: [
-                {x: 0, y: 0, h: 2, material: 'concrete'}, {x: 1, y: 0, h: 3, material: 'concrete'}, {x: 0, y: 1, h: 4, material: 'concrete'},
-                {x: 2, y: 2, h: 5, material: 'concrete'}, {x: 3, y: 2, h: 2, material: 'concrete'}, {x: 2, y: 3, h: 3, material: 'concrete'},
-                {x: 5, y: 1, h: 4, material: 'concrete'}, {x: 6, y: 0, h: 2, material: 'concrete'}, {x: 5, y: 0, h: 5, material: 'concrete'},
-                {x: 8, y: 4, h: 3, material: 'concrete'}, {x: 9, y: 5, h: 4, material: 'concrete'}, {x: 8, y: 5, h: 2, material: 'concrete'},
-                {x: 4, y: 8, h: 5, material: 'concrete'}, {x: 5, y: 9, h: 3, material: 'concrete'}, {x: 4, y: 9, h: 4, material: 'concrete'},
-                {x: 2, y: 7, h: 2, material: 'concrete'}, {x: 1, y: 8, h: 4, material: 'concrete'}, {x: 2, y: 8, h: 3, material: 'concrete'}
-            ],
+        'kolkata': {
+            buildings: [{"x": 3, "y": 4, "h": 5, "material": "hospital"}, {"x": 8, "y": 9, "h": 5, "material": "concrete"}, {"x": 7, "y": 9, "h": 5, "material": "hospital"}, {"x": 0, "y": 8, "h": 5, "material": "hospital"}, {"x": 0, "y": 6, "h": 5, "material": "concrete"}, {"x": 2, "y": 6, "h": 12, "material": "concrete"}, {"x": 4, "y": 2, "h": 5, "material": "concrete"}, {"x": 5, "y": 2, "h": 5, "material": "concrete"}, {"x": 1, "y": 3, "h": 5, "material": "concrete"}, {"x": 3, "y": 2, "h": 5, "material": "concrete"}, {"x": 0, "y": 3, "h": 5, "material": "concrete"}, {"x": 0, "y": 2, "h": 5, "material": "concrete"}, {"x": 5, "y": 1, "h": 5, "material": "concrete"}, {"x": 1, "y": 6, "h": 5, "material": "concrete"}, {"x": 4, "y": 6, "h": 5, "material": "concrete"}, {"x": 5, "y": 4, "h": 5, "material": "concrete"}, {"x": 6, "y": 0, "h": 5, "material": "concrete"}, {"x": 9, "y": 7, "h": 5, "material": "concrete"}, {"x": 8, "y": 6, "h": 5, "material": "concrete"}, {"x": 9, "y": 9, "h": 5, "material": "concrete"}, {"x": 9, "y": 6, "h": 5, "material": "concrete"}, {"x": 9, "y": 5, "h": 5, "material": "concrete"}, {"x": 8, "y": 8, "h": 5, "material": "concrete"}, {"x": 7, "y": 6, "h": 5, "material": "concrete"}, {"x": 8, "y": 4, "h": 5, "material": "concrete"}, {"x": 8, "y": 7, "h": 5, "material": "concrete"}, {"x": 7, "y": 4, "h": 5, "material": "concrete"}, {"x": 8, "y": 5, "h": 5, "material": "concrete"}, {"x": 9, "y": 4, "h": 5, "material": "concrete"}, {"x": 8, "y": 3, "h": 5, "material": "concrete"}, {"x": 9, "y": 8, "h": 5, "material": "concrete"}, {"x": 7, "y": 5, "h": 5, "material": "concrete"}, {"x": 6, "y": 8, "h": 5, "material": "concrete"}, {"x": 7, "y": 8, "h": 5, "material": "concrete"}, {"x": 6, "y": 9, "h": 5, "material": "concrete"}, {"x": 1, "y": 8, "h": 5, "material": "concrete"}, {"x": 1, "y": 5, "h": 5, "material": "concrete"}, {"x": 2, "y": 8, "h": 5, "material": "concrete"}, {"x": 3, "y": 8, "h": 5, "material": "concrete"}, {"x": 4, "y": 9, "h": 5, "material": "concrete"}, {"x": 6, "y": 3, "h": 5, "material": "concrete"}, {"x": 1, "y": 7, "h": 5, "material": "concrete"}, {"x": 5, "y": 9, "h": 5, "material": "concrete"}, {"x": 2, "y": 7, "h": 5, "material": "concrete"}, {"x": 1, "y": 9, "h": 5, "material": "concrete"}, {"x": 3, "y": 7, "h": 5, "material": "concrete"}, {"x": 0, "y": 9, "h": 5, "material": "concrete"}, {"x": 4, "y": 4, "h": 5, "material": "concrete"}, {"x": 5, "y": 8, "h": 5, "material": "concrete"}, {"x": 4, "y": 8, "h": 5, "material": "concrete"}, {"x": 4, "y": 7, "h": 5, "material": "concrete"}, {"x": 5, "y": 3, "h": 5, "material": "concrete"}, {"x": 2, "y": 4, "h": 5, "material": "concrete"}, {"x": 0, "y": 7, "h": 5, "material": "concrete"}, {"x": 2, "y": 9, "h": 5, "material": "concrete"}, {"x": 5, "y": 7, "h": 5, "material": "concrete"}, {"x": 3, "y": 6, "h": 5, "material": "concrete"}, {"x": 3, "y": 9, "h": 5, "material": "concrete"}, {"x": 9, "y": 1, "h": 5, "material": "concrete"}, {"x": 7, "y": 3, "h": 5, "material": "concrete"}, {"x": 8, "y": 1, "h": 5, "material": "concrete"}, {"x": 8, "y": 0, "h": 5, "material": "concrete"}, {"x": 9, "y": 3, "h": 5, "material": "concrete"}, {"x": 6, "y": 2, "h": 5, "material": "concrete"}, {"x": 7, "y": 2, "h": 5, "material": "concrete"}, {"x": 7, "y": 7, "h": 5, "material": "concrete"}, {"x": 6, "y": 5, "h": 5, "material": "concrete"}, {"x": 6, "y": 4, "h": 5, "material": "concrete"}, {"x": 6, "y": 7, "h": 5, "material": "concrete"}, {"x": 2, "y": 5, "h": 15, "material": "concrete"}],
             sources: [{x: 4, y: 3, intensity: 1500}, {x: 7, y: 2, intensity: 1200}, {x: 1, y: 5, intensity: 1200}]
         }
     };
 
     presetSelect.addEventListener('change', (e) => {
-        const preset = PRESETS[e.target.value];
+        const presetId = e.target.value;
+        const preset = PRESETS[presetId];
         if (preset) {
             buildings = JSON.parse(JSON.stringify(preset.buildings));
             sources = JSON.parse(JSON.stringify(preset.sources));
-            drawGrid();
+            
+            const isMapPreset = (presetId === 'barcelona' || presetId === 'kolkata');
+            const mapDiv = document.getElementById('map');
+            
+            if (isMapPreset) {
+                mapDiv.style.display = 'block';
+                setMapView(presetId);
+                plannerCanvas.style.backgroundColor = 'transparent';
+            } else {
+                mapDiv.style.display = 'none';
+                plannerCanvas.style.backgroundColor = '#020617';
+            }
+            
+            drawGrid(isMapPreset); // Pass parameter to control grid visibility
             plannerOverlay.innerHTML = '';
             lastSimData = null;
             suggestionBox.classList.add('hidden');
@@ -373,39 +398,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const GRID_SIZE = 10;
     const CELL_PX = plannerCanvas.width / GRID_SIZE;
 
-    const drawGrid = () => {
+    const drawGrid = (isMap = false) => {
         ctx.clearRect(0, 0, plannerCanvas.width, plannerCanvas.height);
-        ctx.strokeStyle = '#333';
-        ctx.fillStyle = '#666';
-        ctx.font = '12px Inter, sans-serif';
+        
+        if (!isMap) {
+            ctx.strokeStyle = '#333';
+            ctx.fillStyle = '#666';
+            ctx.font = '12px Inter, sans-serif';
 
-        for(let i=0; i<=GRID_SIZE; i++) {
-            // Draw grid lines
-            ctx.beginPath();
-            ctx.moveTo(i * CELL_PX, 0);
-            ctx.lineTo(i * CELL_PX, plannerCanvas.height);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(0, i * CELL_PX);
-            ctx.lineTo(plannerCanvas.width, i * CELL_PX);
-            ctx.stroke();
+            for(let i=0; i<=GRID_SIZE; i++) {
+                // Draw grid lines
+                ctx.beginPath();
+                ctx.moveTo(i * CELL_PX, 0);
+                ctx.lineTo(i * CELL_PX, plannerCanvas.height);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i * CELL_PX);
+                ctx.lineTo(plannerCanvas.width, i * CELL_PX);
+                ctx.stroke();
 
-            // Add numbers
-            if (i < GRID_SIZE) {
-                // X-axis (top)
-                ctx.fillText(i, i * CELL_PX + CELL_PX/2 - 4, 15);
-                // Y-axis (left)
-                ctx.fillText(i, 5, i * CELL_PX + CELL_PX/2 + 4);
+                // Add numbers
+                if (i < GRID_SIZE) {
+                    // X-axis (top)
+                    ctx.fillText(i, i * CELL_PX + CELL_PX/2 - 4, 15);
+                    // Y-axis (left)
+                    ctx.fillText(i, 5, i * CELL_PX + CELL_PX/2 + 4);
+                }
             }
         }
 
+
         buildings.forEach(b => {
-            const hue = b.material === 'glass' ? 200 : b.material === 'concrete' ? 0 : 120;
-            ctx.fillStyle = `hsla(${hue}, 70%, 50%, 0.8)`;
+            let hue = b.material === 'glass' ? 200 : b.material === 'concrete' ? 0 : b.material === 'hospital' ? 340 : 120;
+            // Use 0.4 opactity in map mode to reveal the underlying OSM map, and 0.8 in grid mode
+            const alpha = isMap ? 0.4 : 0.8;
+            ctx.fillStyle = `hsla(${hue}, 70%, 50%, ${alpha})`;
             ctx.fillRect(b.x * CELL_PX + 5, b.y * CELL_PX + 5, CELL_PX - 10, CELL_PX - 10);
-            ctx.fillStyle = '#fff';
+            
+            // Text Color
+            ctx.fillStyle = isMap ? '#fff' : '#fff';
             ctx.font = '10px Arial';
             ctx.fillText(`${b.h}m`, b.x * CELL_PX + 15, b.y * CELL_PX + CELL_PX - 15);
+            
+            // Draw H for Hospital
+            if (b.material === 'hospital') {
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('H', b.x * CELL_PX + CELL_PX/2 - 8, b.y * CELL_PX + CELL_PX/2 + 8);
+            }
         });
 
         sources.forEach(s => {
@@ -531,7 +571,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    drawGrid();
+    window.addEventListener('plannerVisible', () => {
+        if (typeof L !== 'undefined' && document.getElementById('map')) {
+            initMap();
+            leafletMap.invalidateSize();
+        }
+    });
 });
 
 function showTab(tabId) {
@@ -540,7 +585,14 @@ function showTab(tabId) {
     // Show selected tab
     document.getElementById(`${tabId}-tab`).classList.remove('hidden');
     
+    // If planner tab, init/refresh map
+    if (tabId === 'planner') {
+        const plannerEvent = new CustomEvent('plannerVisible');
+        window.dispatchEvent(plannerEvent);
+    }
+
     // Update nav links
+
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
     event.currentTarget.classList.add('active');
 }

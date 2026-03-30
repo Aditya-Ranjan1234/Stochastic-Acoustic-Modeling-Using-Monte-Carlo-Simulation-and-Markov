@@ -220,7 +220,8 @@ def planner_sim():
         "glass": {"alpha": 0.05, "noise": 0.8},
         "concrete": {"alpha": 0.2, "noise": 1.5},
         "vegetation": {"alpha": 0.7, "noise": 3.5},
-        "barrier": {"alpha": 0.9, "noise": 0.5}
+        "barrier": {"alpha": 0.9, "noise": 0.5},
+        "hospital": {"alpha": 0.25, "noise": 1.2}
     }
     
     for i in range(grid_size):

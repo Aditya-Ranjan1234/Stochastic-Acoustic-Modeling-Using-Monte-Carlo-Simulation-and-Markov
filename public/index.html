@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <div class="glow-bg"></div>
@@ -250,8 +252,8 @@
                             <option value="main-street">Main Street (High-Rise)</option>
                             <option value="courtyard">Residential Courtyard</option>
                             <option value="industrial">Industrial Hub</option>
-                            <option value="barcelona">Barcelona (Organized Grid)</option>
-                            <option value="favela">Favela (Unorganized/Organic)</option>
+                            <option value="barcelona">Barcelona (Actual Map)</option>
+                            <option value="kolkata">Kolkata SSKM (Actual Map)</option>
                         </select>
                     </div>
                     
@@ -275,6 +277,7 @@
                                 <option value="glass">Glass (Reflective)</option>
                                 <option value="concrete">Concrete (Medium)</option>
                                 <option value="vegetation">Green Wall (Absorptive)</option>
+                                <option value="hospital">Hospital (Medical Facility)</option>
                             </select>
                         </div>
                     </div>
@@ -293,6 +296,7 @@
 
                 <main class="results-area">
                     <div class="planner-canvas-container glass-panel">
+                        <div id="map" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"></div>
                         <canvas id="planner-canvas" width="600" height="600"></canvas>
                         <div id="planner-overlay" class="heatmap-overlay"></div>
                     </div>
