@@ -352,7 +352,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const drawGrid = () => {
         ctx.clearRect(0, 0, plannerCanvas.width, plannerCanvas.height);
         ctx.strokeStyle = '#333';
+        ctx.fillStyle = '#666';
+        ctx.font = '12px Inter, sans-serif';
+
         for(let i=0; i<=GRID_SIZE; i++) {
+            // Draw grid lines
             ctx.beginPath();
             ctx.moveTo(i * CELL_PX, 0);
             ctx.lineTo(i * CELL_PX, plannerCanvas.height);
@@ -361,6 +365,14 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.moveTo(0, i * CELL_PX);
             ctx.lineTo(plannerCanvas.width, i * CELL_PX);
             ctx.stroke();
+
+            // Add numbers
+            if (i < GRID_SIZE) {
+                // X-axis (top)
+                ctx.fillText(i, i * CELL_PX + CELL_PX/2 - 4, 15);
+                // Y-axis (left)
+                ctx.fillText(i, 5, i * CELL_PX + CELL_PX/2 + 4);
+            }
         }
 
         buildings.forEach(b => {
@@ -413,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             buildings.push({ x, y, h: parseInt(h), material });
         } else if (currentTool === 'source') {
             sources = sources.filter(s => s.x !== x || s.y !== y);
-            sources.push({ x, y, intensity: 1000 });
+            sources.push({ x, y, intensity: 500 }); // Adjusted intensity
         }
         drawGrid();
     };

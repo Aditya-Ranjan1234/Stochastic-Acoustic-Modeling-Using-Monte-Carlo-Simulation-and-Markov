@@ -246,7 +246,8 @@ def planner_sim():
                     local_noise_std = m['noise']
             
             # Stochastic simulation
-            samples = 100 + 10 * np.log10(base_noise + 1e-10) - (local_alpha * 25) + (local_h_w * 5)
+            # Lower baseline to 45dB (ambient) so sources create a visible gradient
+            samples = 45 + 10 * np.log10(base_noise + 1e-10) - (local_alpha * 20) + (local_h_w * 5)
             noise_samples = samples + np.random.normal(0, local_noise_std, 100)
             
             spl_map[i, j] = np.mean(noise_samples)
