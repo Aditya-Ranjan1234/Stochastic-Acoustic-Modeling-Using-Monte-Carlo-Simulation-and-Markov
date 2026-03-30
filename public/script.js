@@ -330,6 +330,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 {x: 4, y: 4, h: 5, material: 'concrete'}
             ],
             sources: [{x: 2, y: 2, intensity: 2000}, {x: 7, y: 7, intensity: 2000}, {x: 5, y: 1, intensity: 1500}]
+        },
+        'barcelona': {
+            buildings: [
+                {x: 1, y: 1, h: 6, material: 'concrete'}, {x: 1, y: 2, h: 6, material: 'concrete'},
+                {x: 2, y: 1, h: 6, material: 'concrete'}, {x: 2, y: 2, h: 6, material: 'concrete'},
+                {x: 4, y: 1, h: 6, material: 'concrete'}, {x: 4, y: 2, h: 6, material: 'concrete'},
+                {x: 5, y: 1, h: 6, material: 'concrete'}, {x: 5, y: 2, h: 6, material: 'concrete'},
+                {x: 1, y: 4, h: 6, material: 'concrete'}, {x: 1, y: 5, h: 6, material: 'concrete'},
+                {x: 2, y: 4, h: 6, material: 'concrete'}, {x: 2, y: 5, h: 6, material: 'concrete'},
+                {x: 4, y: 4, h: 6, material: 'concrete'}, {x: 4, y: 5, h: 6, material: 'concrete'},
+                {x: 5, y: 4, h: 6, material: 'concrete'}, {x: 5, y: 5, h: 6, material: 'concrete'}
+            ],
+            sources: [{x: 3, y: 3, intensity: 1000}, {x: 3, y: 0, intensity: 800}, {x: 3, y: 6, intensity: 800}]
+        },
+        'favela': {
+            buildings: [
+                {x: 0, y: 0, h: 2, material: 'concrete'}, {x: 1, y: 0, h: 3, material: 'concrete'}, {x: 0, y: 1, h: 4, material: 'concrete'},
+                {x: 2, y: 2, h: 5, material: 'concrete'}, {x: 3, y: 2, h: 2, material: 'concrete'}, {x: 2, y: 3, h: 3, material: 'concrete'},
+                {x: 5, y: 1, h: 4, material: 'concrete'}, {x: 6, y: 0, h: 2, material: 'concrete'}, {x: 5, y: 0, h: 5, material: 'concrete'},
+                {x: 8, y: 4, h: 3, material: 'concrete'}, {x: 9, y: 5, h: 4, material: 'concrete'}, {x: 8, y: 5, h: 2, material: 'concrete'},
+                {x: 4, y: 8, h: 5, material: 'concrete'}, {x: 5, y: 9, h: 3, material: 'concrete'}, {x: 4, y: 9, h: 4, material: 'concrete'},
+                {x: 2, y: 7, h: 2, material: 'concrete'}, {x: 1, y: 8, h: 4, material: 'concrete'}, {x: 2, y: 8, h: 3, material: 'concrete'}
+            ],
+            sources: [{x: 4, y: 3, intensity: 1500}, {x: 7, y: 2, intensity: 1200}, {x: 1, y: 5, intensity: 1200}]
         }
     };
 

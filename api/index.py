@@ -258,7 +258,12 @@ def planner_sim():
             # 3. Final SPL calculation
             # Use 50dB as a quiet floor, energy adds logarithmically
             spl = 50 + 10 * np.log10(base_noise_energy + 1e-5) - (local_alpha * 10) + (local_h_w * 2)
-            noise_samples = spl + np.random.normal(0, local_noise_std, 100)
+            
+            # Make variance depend on buildings - more buildings = more scattering = more uncertainty
+            building_influence = sum(1 for b in buildings if abs(b['x']-i) <= 1 and abs(b['y']-j) <= 1)
+            dynamic_std = local_noise_std * (1.0 + 0.5 * building_influence)
+            
+            noise_samples = spl + np.random.normal(0, dynamic_std, 100)
             
             spl_map[i, j] = np.mean(noise_samples)
             var_map[i, j] = np.std(noise_samples)
