@@ -450,16 +450,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderPlannerHeatmap = (data) => {
         plannerOverlay.innerHTML = '';
         const map = currentLayer === 'spl' ? data.spl : data.variance;
-        const range = currentLayer === 'spl' ? [40, 90] : [0, 5];
+        // Adjusted ranges for better visual resolution
+        const range = currentLayer === 'spl' ? [50, 85] : [0, 4];
 
         for(let i=0; i<GRID_SIZE; i++) {
             for(let j=0; j<GRID_SIZE; j++) {
                 const val = map[j][i];
                 const cell = document.createElement('div');
                 cell.className = 'heatmap-cell';
-                const ratio = Math.max(0, Math.min(1, (val - range[0]) / (range[1] - range[0])));
-                const hue = currentLayer === 'spl' ? (1 - ratio) * 120 : 280;
-                cell.style.backgroundColor = `hsla(${hue}, 100%, 50%, 0.6)`;
+                
+                // Calculate ratio with slightly more contrast
+                let ratio = (val - range[0]) / (range[1] - range[0]);
+                ratio = Math.max(0, Math.min(1, ratio));
+                
+                // Noise (SPL): Green (120) -> Red (0)
+                // Variance: Blue (240) -> Purple (280)
+                const hue = currentLayer === 'spl' ? (1 - ratio) * 120 : 240 + (ratio * 40);
+                const alpha = ratio * 0.7 + 0.1; // Make quiet areas more transparent
+                
+                cell.style.backgroundColor = `hsla(${hue}, 100%, 50%, ${alpha})`;
                 plannerOverlay.appendChild(cell);
             }
         }
@@ -480,7 +489,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const response = await fetch('/api/planner/suggest', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ spl: lastSimData.spl, variance: lastSimData.variance })
+            body: JSON.stringify({ 
+                spl: lastSimData.spl, 
+                variance: lastSimData.variance,
+                buildings,
+                sources
+            })
         });
         const data = await response.json();
         

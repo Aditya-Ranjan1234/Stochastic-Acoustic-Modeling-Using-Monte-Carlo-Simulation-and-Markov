@@ -212,12 +212,10 @@ def planner_sim():
     buildings = data.get('buildings', [])
     sources = data.get('sources', [])
     
-    # 10x10 micro-grid for high resolution
     grid_size = 10
     spl_map = np.zeros((grid_size, grid_size))
     var_map = np.zeros((grid_size, grid_size))
     
-    # Material database
     materials = {
         "glass": {"alpha": 0.05, "noise": 0.8},
         "concrete": {"alpha": 0.2, "noise": 1.5},
@@ -227,15 +225,27 @@ def planner_sim():
     
     for i in range(grid_size):
         for j in range(grid_size):
-            # Base noise from sources
-            base_noise = 0
+            # 1. Calculate source-to-receiver noise with building attenuation
+            base_noise_energy = 0
             for src in sources:
-                dist = np.sqrt((src['x'] - i)**2 + (src['y'] - j)**2) + 0.1
-                base_noise += src['intensity'] / (dist**2)
+                dist = np.sqrt((src['x'] - i)**2 + (src['y'] - j)**2)
+                
+                # Check if any building is between source and current cell
+                attenuation = 1.0
+                for b in buildings:
+                    # Simple shadowing: if building is on the same line or very close
+                    # For a 10x10 grid, we check if the building is roughly between
+                    if min(src['x'], i) <= b['x'] <= max(src['x'], i) and \
+                       min(src['y'], j) <= b['y'] <= max(src['y'], j):
+                        if (b['x'] != i or b['y'] != j) and (b['x'] != src['x'] or b['y'] != src['y']):
+                            attenuation *= (1.0 - materials.get(b['material'], materials['concrete'])['alpha'])
+                
+                # Inverse square law with shadowing
+                base_noise_energy += (src['intensity'] * attenuation) / (dist**2 + 1.0)
             
-            # Factor in building interactions
-            local_alpha = 0.1 # Default air absorption
-            local_h_w = 0.5   # Default open space
+            # 2. Local surface interactions
+            local_alpha = 0.1
+            local_h_w = 0.5
             local_noise_std = 1.0
             
             for b in buildings:
@@ -245,10 +255,10 @@ def planner_sim():
                     local_h_w = b['h'] / 5.0
                     local_noise_std = m['noise']
             
-            # Stochastic simulation
-            # Lower baseline to 45dB (ambient) so sources create a visible gradient
-            samples = 45 + 10 * np.log10(base_noise + 1e-10) - (local_alpha * 20) + (local_h_w * 5)
-            noise_samples = samples + np.random.normal(0, local_noise_std, 100)
+            # 3. Final SPL calculation
+            # Use 50dB as a quiet floor, energy adds logarithmically
+            spl = 50 + 10 * np.log10(base_noise_energy + 1e-5) - (local_alpha * 10) + (local_h_w * 2)
+            noise_samples = spl + np.random.normal(0, local_noise_std, 100)
             
             spl_map[i, j] = np.mean(noise_samples)
             var_map[i, j] = np.std(noise_samples)
@@ -263,32 +273,45 @@ def planner_sim():
 def planner_suggest():
     """
     Suggests improvements based on high SPL or high Variance.
+    Avoids suggesting on top of existing sources or buildings.
     """
     data = request.json
     spl_map = np.array(data.get('spl'))
     var_map = np.array(data.get('variance'))
+    sources = data.get('sources', [])
+    buildings = data.get('buildings', [])
+    
+    source_locs = set((s['x'], s['y']) for s in sources)
+    building_locs = set((b['x'], b['y']) for b in buildings)
     
     suggestions = []
     
-    # Find max SPL zone
-    max_idx = np.unravel_index(np.argmax(spl_map), spl_map.shape)
-    if spl_map[max_idx] > 75:
-        suggestions.append({
-            "x": int(max_idx[0]),
-            "y": int(max_idx[1]),
-            "type": "barrier",
-            "reason": f"High Noise Level ({round(spl_map[max_idx], 1)} dB)"
-        })
-        
-    # Find max Variance zone
-    var_idx = np.unravel_index(np.argmax(var_map), var_map.shape)
-    if var_map[var_idx] > 3.0:
-        suggestions.append({
-            "x": int(var_idx[0]),
-            "y": int(var_idx[1]),
-            "type": "vegetation",
-            "reason": "High Predictive Uncertainty (Irregular scattering)"
-        })
+    # 1. Identify high noise zones (above 70dB) that aren't sources
+    high_noise = np.where(spl_map > 70)
+    for i, j in zip(high_noise[0], high_noise[1]):
+        if (i, j) not in source_locs and (i, j) not in building_locs:
+            # Suggest a barrier adjacent to sources to block noise
+            for si, sj in source_locs:
+                if abs(si-i) <= 1 and abs(sj-j) <= 1:
+                    suggestions.append({
+                        "x": int(i), "y": int(j),
+                        "type": "barrier",
+                        "reason": f"High Noise Exposure ({round(spl_map[i,j], 1)} dB) near source"
+                    })
+                    break
+        if len(suggestions) >= 3: break
+
+    # 2. Identify high uncertainty zones
+    if len(suggestions) < 3:
+        high_var = np.where(var_map > 3.0)
+        for i, j in zip(high_var[0], high_var[1]):
+            if (i, j) not in source_locs and (i, j) not in building_locs:
+                suggestions.append({
+                    "x": int(i), "y": int(j),
+                    "type": "vegetation",
+                    "reason": "Unpredictable sound scattering zone"
+                })
+            if len(suggestions) >= 5: break
         
     return jsonify({"suggestions": suggestions})
 
