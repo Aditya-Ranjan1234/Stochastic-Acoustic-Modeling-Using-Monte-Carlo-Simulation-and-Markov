@@ -21,6 +21,7 @@
             <a href="#" onclick="showTab('convergence')">Convergence</a>
             <a href="#" onclick="showTab('grid')">Urban Grid</a>
             <a href="#" onclick="showTab('planner')">City Planner</a>
+            <a href="#" onclick="showTab('hospital')">Hospital Optimizer</a>
             <a href="#" onclick="showTab('inferences')">Research Inferences</a>
         </div>
     </nav>
@@ -303,6 +304,58 @@
                     <div id="suggestion-box" class="suggestion-card glass-panel hidden">
                         <h4>Planner Insights</h4>
                         <ul id="suggestion-list"></ul>
+                    </div>
+                </main>
+            </div>
+        </div>
+        
+        <!-- HOSPITAL OPTIMIZER TAB -->
+        <div id="hospital-tab" class="tab-content hidden">
+            <div class="dashboard-grid">
+                <aside class="sidebar glass-panel">
+                    <div class="section-title">
+                        <span class="icon">🏥</span>
+                        <h2>Site Intelligence</h2>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Target Site</label>
+                        <select id="hospital-site" class="preset-select">
+                            <option value="kolkata">SSKM Hospital, Kolkata</option>
+                            <option value="barcelona">Eixample District, Barcelona</option>
+                        </select>
+                    </div>
+
+                    <div class="info-bubble">
+                        <p><strong>Acoustic Advisor:</strong> Click analyze to automatically find the quietest ward zones and optimal planting buffers.</p>
+                    </div>
+
+                    <button id="optimize-hospital-btn" class="primary-btn">
+                        <span class="btn-glow"></span>
+                        <span class="text">Analyze Site Layout</span>
+                    </button>
+                    
+                    <div class="legend glass-panel">
+                        <h4>Acoustic Legend</h4>
+                        <div class="legend-item"><span class="box ward"></span> Ward</div>
+                        <div class="legend-item"><span class="box plant"></span> Vegetation</div>
+                        <div class="legend-item"><span class="box signal"></span> Source</div>
+                    </div>
+                </aside>
+
+                <main class="results-area">
+                    <div class="planner-canvas-container hospital-canvas-container glass-panel">
+                        <div id="hospital-map" class="map-layer"></div>
+                        <canvas id="hospital-canvas" width="600" height="600"></canvas>
+                        <div id="hospital-overlay" class="heatmap-overlay"></div>
+                    </div>
+                    <div id="hospital-insights" class="suggestion-card glass-panel hidden">
+                        <h4>Optimization Results</h4>
+                        <div id="hospital-score" class="score-display">
+                            <label>Quietness Index:</label>
+                            <span class="score-val">--</span>
+                        </div>
+                        <ul id="hospital-suggestion-list"></ul>
                     </div>
                 </main>
             </div>

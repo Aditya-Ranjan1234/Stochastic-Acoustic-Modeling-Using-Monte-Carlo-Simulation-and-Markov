@@ -329,6 +329,130 @@ def planner_suggest():
         
     return jsonify({"suggestions": suggestions})
 
+@app.route('/api/hospital/optimize', methods=['POST'])
+def hospital_optimize():
+    """
+    Automated Advisor for Real-World Hospital Sites.
+    Performs a global search for optimal ward and plant placements.
+    """
+    data = request.json
+    site_id = data.get('site', 'kolkata')
+    
+    # Pre-defined sources for real-world sites
+    presets = {
+        'kolkata': {
+            'buildings': [{"x": 0, "y": 2, "h": 5, "material": "concrete"}, {"x": 0, "y": 3, "h": 5, "material": "concrete"}, {"x": 0, "y": 6, "h": 5, "material": "concrete"}, {"x": 0, "y": 7, "h": 5, "material": "concrete"}, {"x": 0, "y": 8, "h": 5, "material": "hospital"}, {"x": 0, "y": 9, "h": 5, "material": "concrete"}, {"x": 1, "y": 3, "h": 5, "material": "concrete"}, {"x": 1, "y": 5, "h": 5, "material": "concrete"}, {"x": 1, "y": 6, "h": 5, "material": "concrete"}, {"x": 1, "y": 7, "h": 5, "material": "concrete"}, {"x": 1, "y": 8, "h": 5, "material": "concrete"}, {"x": 1, "y": 9, "h": 5, "material": "concrete"}, {"x": 2, "y": 4, "h": 5, "material": "concrete"}, {"x": 2, "y": 5, "h": 15, "material": "concrete"}, {"x": 2, "y": 6, "h": 12, "material": "concrete"}, {"x": 2, "y": 7, "h": 5, "material": "concrete"}, {"x": 2, "y": 8, "h": 5, "material": "concrete"}, {"x": 2, "y": 9, "h": 5, "material": "concrete"}, {"x": 3, "y": 2, "h": 5, "material": "concrete"}, {"x": 3, "y": 4, "h": 5, "material": "hospital"}, {"x": 3, "y": 6, "h": 5, "material": "concrete"}, {"x": 3, "y": 7, "h": 5, "material": "concrete"}, {"x": 3, "y": 8, "h": 5, "material": "concrete"}, {"x": 3, "y": 9, "h": 5, "material": "concrete"}, {"x": 4, "y": 2, "h": 5, "material": "concrete"}, {"x": 4, "y": 4, "h": 5, "material": "concrete"}, {"x": 4, "y": 6, "h": 5, "material": "concrete"}, {"x": 4, "y": 7, "h": 5, "material": "concrete"}, {"x": 4, "y": 8, "h": 5, "material": "concrete"}, {"x": 4, "y": 9, "h": 5, "material": "concrete"}, {"x": 5, "y": 1, "h": 5, "material": "concrete"}, {"x": 5, "y": 2, "h": 5, "material": "concrete"}, {"x": 5, "y": 3, "h": 5, "material": "concrete"}, {"x": 5, "y": 4, "h": 5, "material": "concrete"}, {"x": 5, "y": 7, "h": 5, "material": "concrete"}, {"x": 5, "y": 8, "h": 5, "material": "concrete"}, {"x": 5, "y": 9, "h": 5, "material": "concrete"}, {"x": 6, "y": 0, "h": 5, "material": "concrete"}, {"x": 6, "y": 2, "h": 5, "material": "concrete"}, {"x": 6, "y": 3, "h": 5, "material": "concrete"}, {"x": 6, "y": 4, "h": 5, "material": "concrete"}, {"x": 6, "y": 5, "h": 5, "material": "concrete"}, {"x": 6, "y": 7, "h": 5, "material": "concrete"}, {"x": 6, "y": 8, "h": 5, "material": "concrete"}, {"x": 6, "y": 9, "h": 5, "material": "concrete"}, {"x": 7, "y": 2, "h": 5, "material": "concrete"}, {"x": 7, "y": 3, "h": 5, "material": "concrete"}, {"x": 7, "y": 4, "h": 5, "material": "concrete"}, {"x": 7, "y": 5, "h": 5, "material": "concrete"}, {"x": 7, "y": 6, "h": 5, "material": "concrete"}, {"x": 7, "y": 7, "h": 5, "material": "concrete"}, {"x": 7, "y": 8, "h": 5, "material": "concrete"}, {"x": 7, "y": 9, "h": 5, "material": "hospital"}, {"x": 8, "y": 0, "h": 5, "material": "concrete"}, {"x": 8, "y": 1, "h": 5, "material": "concrete"}, {"x": 8, "y": 3, "h": 5, "material": "concrete"}, {"x": 8, "y": 4, "h": 5, "material": "concrete"}, {"x": 8, "y": 5, "h": 5, "material": "concrete"}, {"x": 8, "y": 6, "h": 5, "material": "concrete"}, {"x": 8, "y": 7, "h": 5, "material": "concrete"}, {"x": 8, "y": 8, "h": 5, "material": "concrete"}, {"x": 8, "y": 9, "h": 5, "material": "concrete"}, {"x": 9, "y": 1, "h": 5, "material": "concrete"}, {"x": 9, "y": 3, "h": 5, "material": "concrete"}, {"x": 9, "y": 4, "h": 5, "material": "concrete"}, {"x": 9, "y": 5, "h": 5, "material": "concrete"}, {"x": 9, "y": 6, "h": 5, "material": "concrete"}, {"x": 9, "y": 7, "h": 5, "material": "concrete"}, {"x": 9, "y": 8, "h": 5, "material": "concrete"}, {"x": 9, "y": 9, "h": 5, "material": "concrete"}],
+            'sources': [{'x': 4, 'y': 7, 'intensity': 1500}, {'x': 8, 'y': 5, 'intensity': 1200}, {'x': 1, 'y': 9, 'intensity': 1000}]
+        },
+        'barcelona': {
+            'buildings': [{"x": 0, "y": 2, "h": 15, "material": "concrete"}, {"x": 0, "y": 3, "h": 5, "material": "concrete"}, {"x": 0, "y": 4, "h": 15, "material": "concrete"}, {"x": 0, "y": 5, "h": 5, "material": "concrete"}, {"x": 0, "y": 6, "h": 5, "material": "concrete"}, {"x": 0, "y": 7, "h": 5, "material": "concrete"}, {"x": 1, "y": 2, "h": 15, "material": "concrete"}, {"x": 1, "y": 6, "h": 5, "material": "concrete"}, {"x": 2, "y": 0, "h": 15, "material": "concrete"}, {"x": 2, "y": 1, "h": 15, "material": "concrete"}, {"x": 2, "y": 2, "h": 15, "material": "concrete"}, {"x": 2, "y": 3, "h": 5, "material": "concrete"}, {"x": 2, "y": 4, "h": 15, "material": "concrete"}, {"x": 2, "y": 5, "h": 15, "material": "concrete"}, {"x": 2, "y": 6, "h": 5, "material": "concrete"}, {"x": 2, "y": 7, "h": 5, "material": "concrete"}, {"x": 2, "y": 8, "h": 5, "material": "concrete"}, {"x": 2, "y": 9, "h": 5, "material": "concrete"}, {"x": 3, "y": 0, "h": 15, "material": "concrete"}, {"x": 3, "y": 1, "h": 15, "material": "concrete"}, {"x": 3, "y": 2, "h": 5, "material": "concrete"}, {"x": 3, "y": 4, "h": 15, "material": "concrete"}, {"x": 3, "y": 5, "h": 5, "material": "concrete"}, {"x": 3, "y": 7, "h": 5, "material": "concrete"}, {"x": 3, "y": 8, "h": 5, "material": "concrete"}, {"x": 3, "y": 9, "h": 5, "material": "concrete"}, {"x": 4, "y": 0, "h": 15, "material": "concrete"}, {"x": 4, "y": 1, "h": 15, "material": "concrete"}, {"x": 4, "y": 2, "h": 5, "material": "concrete"}, {"x": 4, "y": 3, "h": 5, "material": "concrete"}, {"x": 4, "y": 4, "h": 5, "material": "concrete"}, {"x": 4, "y": 7, "h": 15, "material": "concrete"}, {"x": 4, "y": 8, "h": 15, "material": "concrete"}, {"x": 4, "y": 9, "h": 15, "material": "concrete"}, {"x": 5, "y": 0, "h": 15, "material": "concrete"}, {"x": 5, "y": 2, "h": 15, "material": "concrete"}, {"x": 5, "y": 3, "h": 5, "material": "concrete"}, {"x": 5, "y": 4, "h": 15, "material": "concrete"}, {"x": 5, "y": 6, "h": 5, "material": "concrete"}, {"x": 5, "y": 7, "h": 15, "material": "concrete"}, {"x": 5, "y": 9, "h": 15, "material": "concrete"}, {"x": 6, "y": 0, "h": 15, "material": "concrete"}, {"x": 6, "y": 2, "h": 5, "material": "concrete"}, {"x": 6, "y": 4, "h": 15, "material": "concrete"}, {"x": 6, "y": 8, "h": 15, "material": "concrete"}, {"x": 7, "y": 0, "h": 15, "material": "concrete"}, {"x": 7, "y": 2, "h": 15, "material": "concrete"}, {"x": 7, "y": 3, "h": 5, "material": "concrete"}, {"x": 7, "y": 4, "h": 15, "material": "concrete"}, {"x": 7, "y": 5, "h": 5, "material": "concrete"}, {"x": 7, "y": 6, "h": 5, "material": "concrete"}, {"x": 7, "y": 7, "h": 5, "material": "concrete"}, {"x": 7, "y": 8, "h": 5, "material": "concrete"}, {"x": 7, "y": 9, "h": 15, "material": "concrete"}, {"x": 8, "y": 2, "h": 5, "material": "concrete"}, {"x": 8, "y": 3, "h": 5, "material": "concrete"}, {"x": 8, "y": 7, "h": 5, "material": "concrete"}, {"x": 9, "y": 3, "h": 5, "material": "concrete"}, {"x": 9, "y": 4, "h": 5, "material": "concrete"}, {"x": 9, "y": 6, "h": 15, "material": "concrete"}, {"x": 9, "y": 7, "h": 15, "material": "concrete"}],
+            'sources': [{'x': 3, 'y': 3, 'intensity': 1200}, {'x': 7, 'y': 6, 'intensity': 1000}]
+        }
+    }
+    
+    site = presets.get(site_id, presets['kolkata'])
+    buildings = site['buildings']
+    sources = site['sources']
+    
+    # 1. Compute Base Noise Map (20x20)
+    grid_size = 20
+    spl_map = np.full((grid_size, grid_size), 35.0) # 35dB hospital baseline
+    
+    # Pre-scale buildings and sources to the 20x20 grid
+    # Original map is 10x10, we are now 20x20 (x2 scale)
+    for y in range(grid_size):
+        for x in range(grid_size):
+            total_energy = 0
+            for s in sources:
+                # Source coordinates (already in 10x10 space)
+                sx, sy = s['x'] * 2, s['y'] * 2
+                
+                # Distance in grid units
+                dist = np.sqrt((sx - x)**2 + (sy - y)**2)
+                
+                # Attenuation Logic (Inverse Square Law + Shadowing)
+                attenuation = 1.0
+                
+                # RAY-CASTING for building shadows (Simplified for performance)
+                for b in buildings:
+                    bx, by = b.get('x', -1) * 2, b.get('y', -1) * 2
+                    bh = b.get('h', 5)
+                    # If building is between source and point
+                    if (min(sx, x) <= bx <= max(sx, x)) and (min(sy, y) <= by <= max(sy, y)):
+                        # Simple Diffraction: Further reduction if building is high
+                        attenuation *= (0.2 if bh > 10 else 0.5) 
+
+                # Invers Square Law (NMPB-Road style approximation)
+                energy = (s.get('intensity', 1500) * attenuation) / (4 * np.pi * (dist**2 + 0.5))
+                total_energy += energy
+            
+            # SPL conversion with sensitive range
+            if total_energy > 0:
+                spl_map[y, x] = 30 + 10 * np.log10(total_energy + 1e-6)
+
+    # 2. Automated Search for Ideal Placements
+    # Find Local Minima for multiple "Ideal Wards" (Top 3 non-adjacent)
+    ideal_wards = []
+    # Simplified local minima search: pick the quietest cells that are at least 5 units apart
+    temp_spl = spl_map.copy()
+    for _ in range(3):
+        idx = np.argmin(temp_spl)
+        wy, wx = idx // grid_size, idx % grid_size
+        spl_val = temp_spl[wy, wx]
+        if spl_val > 60: break # Don't place wards in loud areas
+        
+        ideal_wards.append({"x": int(wx // 2), "y": int(wy // 2), "spl": round(float(spl_val), 1)})
+        
+        # Zero-out neighborhood to find the NEXT local minimum
+        y_min, y_max = max(0, wy-4), min(grid_size, wy+5)
+        x_min, x_max = max(0, wx-4), min(grid_size, wx+5)
+        temp_spl[y_min:y_max, x_min:x_max] = 100 # High value to exclude
+    
+    # 3. Distributed Shielding (Plants)
+    # For each ward, place a buffer halfway between it and the 2 most intense sources
+    ideal_plants = []
+    sorted_sources = sorted(sources, key=lambda s: s.get('intensity', 0), reverse=True)
+    
+    for w in ideal_wards:
+        wx, wy = w['x'], w['y']
+        for s in sorted_sources[:2]: # Only shield the 2 loudest sources per ward
+            sx, sy = s['x'], s['y']
+            # Midpoint for shielding
+            px, py = (sx + wx) // 2, (sy + wy) // 2
+            # Add if not duplicate
+            if not any(p['x'] == px and p['y'] == py for p in ideal_plants):
+                ideal_plants.append({"x": int(px), "y": int(py)})
+
+    # All preset sources are returned as Signal Recommendations for traffic control
+    ideal_signals = [{"x": s['x'], "y": s['y']} for s in sorted_sources]
+
+    suggestions = []
+    for i, w in enumerate(ideal_wards):
+        suggestions.append({
+            "label": f"Medical Zone {chr(65+i)}", 
+            "reason": f"Safe zone detected at ({w['x']}, {w['y']}) with sound pressure of {w['spl']} dB."
+        })
+    
+    if len(ideal_plants) > 0:
+        suggestions.append({
+            "label": "Buffer Phase 1",
+            "reason": f"Strategic planting of {len(ideal_plants)} acoustic screens to protect the identified zones."
+        })
+    
+    suggestions.append({
+        "label": "Source Control",
+        "reason": f"Active monitoring of {len(ideal_signals)} local noise emitters detected in vicinity."
+    })
+
+    return jsonify({
+        "spl_map": spl_map.tolist(),
+        "quietness_index": round(float(100 - np.mean([w['spl'] for w in ideal_wards])), 1) if ideal_wards else 0,
+        "optimal_wards": ideal_wards,
+        "optimal_plants": ideal_plants,
+        "optimal_signals": ideal_signals,
+        "suggestions": suggestions
+    })
+
 @app.route('/api/simulate', methods=['POST'])
 @app.route('/simulate', methods=['POST'])
 def run_simulation():

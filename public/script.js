@@ -16,6 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const statEnergy = document.getElementById('stat-energy');
     const statPoints = document.getElementById('stat-points');
 
+    // --- HOSPITAL OPTIMIZER STATE ---
+    let hospitalBuildings = [];
+    let hospitalMap = null;
+    let optimalWards = [];
+    let optimalPlants = [];
+    let optimalSignals = [];
+
     // Update value displays
     numRaysInput.addEventListener('input', (e) => valRays.innerText = e.target.value);
     maxBouncesInput.addEventListener('input', (e) => valBounces.innerText = e.target.value);
@@ -584,6 +591,140 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- HOSPITAL OPTIMIZER LOGIC ---
+    const hospitalCanvas = document.getElementById('hospital-canvas');
+    const hCtx = hospitalCanvas.getContext ? hospitalCanvas.getContext('2d') : null;
+    const hospitalOverlay = document.getElementById('hospital-overlay');
+    const hToolBtns = document.querySelectorAll('.h-tool-btn');
+    const optimizeHospitalBtn = document.getElementById('optimize-hospital-btn');
+    const hospitalSiteSelect = document.getElementById('hospital-site');
+    const hospitalInsights = document.getElementById('hospital-insights');
+    const hospitalSuggestionList = document.getElementById('hospital-suggestion-list');
+    const hospitalScoreVal = document.querySelector('#hospital-score .score-val');
+
+    const initHospitalMap = () => {
+        if (hospitalMap) return;
+        hospitalMap = L.map('hospital-map', {
+            zoomControl: false,
+            attributionControl: false,
+            dragging: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+            touchZoom: false
+        }).setView([22.5395, 88.3435], 17);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(hospitalMap);
+    };
+
+    const setHospitalMapView = (site) => {
+        if (!hospitalMap) initHospitalMap();
+        const mapDiv = document.getElementById('hospital-map');
+        
+        if (site === 'barcelona') {
+            mapDiv.style.transform = 'scale(1.5) rotate(45deg)';
+            hospitalMap.setView([41.3887, 2.1635], 17);
+        } else {
+            mapDiv.style.transform = 'none';
+            hospitalMap.setView([22.5395, 88.3435], 17);
+        }
+        
+        hospitalBuildings = JSON.parse(JSON.stringify(PRESETS[site].buildings));
+        drawHospitalGrid();
+    };
+
+    const drawHospitalGrid = () => {
+        if (!hCtx) return;
+        hCtx.clearRect(0, 0, hospitalCanvas.width, hospitalCanvas.height);
+        const cell = hospitalCanvas.width / 10;
+
+        hospitalBuildings.forEach(b => {
+            hCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            hCtx.fillRect(b.x * cell + 2, b.y * cell + 2, cell - 4, cell - 4);
+        });
+
+        optimalWards.forEach(w => {
+            hCtx.fillStyle = '#10b981';
+            hCtx.fillRect(w.x * cell + 5, w.y * cell + 5, cell - 10, cell - 10);
+            hCtx.fillStyle = '#fff';
+            hCtx.font = 'bold 20px Inter';
+            hCtx.fillText('H', w.x * cell + cell/2 - 8, w.y * cell + cell/2 + 8);
+        });
+
+        optimalPlants.forEach(p => {
+            hCtx.fillStyle = '#22c55e';
+            hCtx.beginPath();
+            hCtx.arc(p.x * cell + cell/2, p.y * cell + cell/2, cell/3, 0, Math.PI*2);
+            hCtx.fill();
+        });
+
+        optimalSignals.forEach(s => {
+            hCtx.strokeStyle = '#ef4444';
+            hCtx.lineWidth = 3;
+            hCtx.strokeRect(s.x * cell + 4, s.y * cell + 4, cell - 8, cell - 8);
+        });
+    };
+
+    if (hospitalSiteSelect) {
+        hospitalSiteSelect.addEventListener('change', (e) => setHospitalMapView(e.target.value));
+        setHospitalMapView(hospitalSiteSelect.value);
+    }
+
+    if (optimizeHospitalBtn) {
+        optimizeHospitalBtn.addEventListener('click', async () => {
+            const site = hospitalSiteSelect.value;
+            const response = await fetch('/api/hospital/optimize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    site: site,
+                    auto: true
+                })
+            });
+            const data = await response.json();
+            
+            optimalWards = data.optimal_wards || [];
+            optimalPlants = data.optimal_plants || [];
+            optimalSignals = data.optimal_signals || [];
+            
+            drawHospitalGrid();
+
+            if (hospitalScoreVal) hospitalScoreVal.innerText = data.quietness_index;
+            if (hospitalInsights) hospitalInsights.classList.remove('hidden');
+            if (hospitalSuggestionList) {
+                hospitalSuggestionList.innerHTML = '';
+                data.suggestions.forEach(s => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `🌟 <strong>${s.label}:</strong> ${s.reason}`;
+                    hospitalSuggestionList.appendChild(li);
+                });
+            }
+
+            if (hospitalOverlay) {
+                hospitalOverlay.innerHTML = '';
+                data.spl_map.forEach((row, j) => {
+                    row.forEach((val, i) => {
+                        const cell = document.createElement('div');
+                        cell.className = 'heatmap-cell h-cell';
+                        let ratio = (val - 35) / 25; // More sensitive: 35dB (Green) to 60dB (Red)
+                        ratio = Math.max(0, Math.min(1, ratio));
+                        cell.style.backgroundColor = `hsla(${(1-ratio)*120}, 100%, 50%, ${ratio*0.7 + 0.1})`;
+                        hospitalOverlay.appendChild(cell);
+                    });
+                });
+            }
+        });
+    }
+
+    window.addEventListener('hospitalVisible', () => {
+        if (typeof L !== 'undefined' && document.getElementById('hospital-map')) {
+            initHospitalMap();
+            hospitalMap.invalidateSize();
+        }
+    });
+
     window.addEventListener('plannerVisible', () => {
         if (typeof L !== 'undefined' && document.getElementById('map')) {
             initMap();
@@ -598,14 +739,16 @@ function showTab(tabId) {
     // Show selected tab
     document.getElementById(`${tabId}-tab`).classList.remove('hidden');
     
-    // If planner tab, init/refresh map
+    // Dispatch visibility events for map initialization
     if (tabId === 'planner') {
-        const plannerEvent = new CustomEvent('plannerVisible');
-        window.dispatchEvent(plannerEvent);
+        window.dispatchEvent(new CustomEvent('plannerVisible'));
+    } else if (tabId === 'hospital') {
+        window.dispatchEvent(new CustomEvent('hospitalVisible'));
     }
 
-    // Update nav links
-
+    // Update nav links active state
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    if (event && event.currentTarget && event.currentTarget.tagName === 'A') {
+        event.currentTarget.classList.add('active');
+    }
 }

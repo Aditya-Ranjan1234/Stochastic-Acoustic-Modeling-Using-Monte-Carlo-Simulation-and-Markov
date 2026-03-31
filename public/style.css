@@ -736,6 +736,146 @@ input[type="range"] {
     }
 }
 
+/* --- Hospital Optimizer Styles --- */
+.hospital-tool-selector {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.h-tool-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.h-tool-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.h-tool-btn.active {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.ward-dot { background: #10b981; box-shadow: 0 0 8px #10b981; }
+.plant-dot { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+.signal-dot { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+.info-bubble {
+    background: rgba(59, 130, 246, 0.05);
+    border-left: 3px solid #3b82f6;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.info-bubble p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.legend {
+    margin-top: 30px;
+    padding: 15px;
+}
+
+.legend h4 {
+    margin: 0 0 12px 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.box {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+}
+
+.box.ward { background: #10b981; }
+.box.plant { background: #22c55e; }
+.box.signal { background: #ef4444; }
+
+.hospital-canvas-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.map-layer {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+#hospital-canvas {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
+}
+
+.score-display {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+}
+
+.score-display label {
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.score-val {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #10b981;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+}
+
 @media (max-width: 480px) {
     .urban-grid, .matrix-grid {
         gap: 4px;
@@ -752,4 +892,5 @@ input[type="range"] {
     .formula {
         font-size: 1rem;
     }
+}
 }
